@@ -41,13 +41,13 @@ const {setDamacIsPopUpOpen}=useContext(MyContext)
                     dolor, sit amet consectetur adipisicing elit. Dicta eveniet
                     aut voluptate optio, minus impedit.
                   </p>
-                  <div className="mt-6 flex space-x-4">
+                  <div className="mt-6 flex flex-wrap gap-4 space-x-4">
                     <button onClick={()=>{
                       setDamacIsPopUpOpen(true)
                     }} className="bg-logoColor cursor-pointer hover:bg-logoColor/90 text-white px-6 py-3 rounded">
                     Event Enquiry
                     </button>
-                    <button className="  text-white px-6 py-3 rounded hover:bg-white hover:text-black">
+                    <button className="   px-6 py-3 rounded hover:bg-white md:bg-transparent bg-white md:text-white text-black hover:text-black">
                       See All Apartments
                     </button>
                   </div>
