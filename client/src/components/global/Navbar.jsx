@@ -13,17 +13,21 @@ import Logo from "../../assets/logopng.png";
 import { RiLoginBoxFill } from "react-icons/ri";
 import { MyContext } from "../../App";
 import Popup from "./Popup";
-import DamacPopUp from "./DamacPopUp";
+import DamacPopUp from "./Damac/DamacPopUp";
+import DamacDetailsPopUp from "./Damac/DamacDetailsPopUp";
+import DamacOtpPupUp from "./Damac/DamacOtpPupUp";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { isPopUpOpen, setIsPopUpOpen,damacIsPopUpOpen,setDamacIsPopUpOpen } = useContext(MyContext);
+  const { isPopUpOpen, setIsPopUpOpen,damacIsPopUpOpen,damacDetailsIsPopUpOpen,setDamacDetailsIsPopUpOpen,damacOtpPopUpOpen, setDamacOtpPopUpOpen } = useContext(MyContext);
 
   useEffect(() => {
     setTimeout(() => {
-      setDamacIsPopUpOpen(true);
-    }, 3000);
+      setDamacDetailsIsPopUpOpen(true);
+    }, 1000);
+    
+    
     setTimeout(() => {
       setIsPopUpOpen(true);
     }, 10000);
@@ -145,6 +149,8 @@ const Navbar = () => {
       </header>
       {isPopUpOpen ? <Popup /> : null}
       {damacIsPopUpOpen ? <DamacPopUp /> : null}
+      {damacDetailsIsPopUpOpen ? <DamacDetailsPopUp /> : null}
+      {damacOtpPopUpOpen ? <DamacOtpPupUp /> : null}
     </>
   );
 };

@@ -1,26 +1,14 @@
 import React, { useState, useContext } from "react";
 import { MdClose, MdArrowDownward } from "react-icons/md"; // Import the down arrow icon
-import { MyContext } from "../../App";
+import { MyContext } from "../../../App";
 const baseUrl = import.meta.env.VITE_APP_URL;
 
 const DamacPopUp = () => {
-  const { setDamacIsPopUpOpen } = useContext(MyContext);
+  const { setDamacIsPopUpOpen, formData, setFormData, setDamacOtpPopUpOpen } =
+    useContext(MyContext);
   const [isSubmitted, setIsSubmitted] = useState(false); // Track submission
 
   // State to store form data
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    gender: "",
-    city: "",
-    country: "",
-    interestedIn: "",
-    interestType: "",
-    plannedWindow: "",
-    budget: "",
-    acceptUpdates: false,
-  });
 
   // Handle input change
   const handleChange = (event) => {
@@ -34,30 +22,11 @@ const DamacPopUp = () => {
   // Handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const result = await fetch(baseUrl + "/add-damac-enquiry", {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
-    if (result.ok) {
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        gender: "",
-        city: "",
-        country: "",
-        interestedIn: "",
-        interestType: "",
-        plannedWindow: "",
-        budget: "",
-        acceptUpdates: false,
-      });
-      setIsSubmitted(true);
-    }
-
+    console.log(formData);
+    
+    setIsSubmitted(true);
+    setDamacIsPopUpOpen(false)
+    setDamacOtpPopUpOpen(true);
     setTimeout(() => {
       setIsSubmitted(false);
     }, 1000);
@@ -75,17 +44,17 @@ const DamacPopUp = () => {
   };
 
   return (
-    <div className="fixed flex items-center justify-center z-[52] top-0 bottom-0 left-0 right-0 backdrop-blur-xs bg-black/50 md:bg-black/30">
+    <div className="fixed flex items-center justify-center z-[53] top-0 bottom-0 left-0 right-0 backdrop-blur-xs bg-black/50 md:bg-black/30">
       <div className="md:py-16 px-6 md:px-16 md:w-[80vw] w-[100vw] text-center">
-        <h2 className="text-lg md:text-2xl font-semibold text-logoColor uppercase border-b-2 border-gray-300 pb-2 inline-block">
-          DAMAC Property Event
-        </h2>
-
         <div className="max-w-4xl mx-auto mt-2 md:mt-4 relative bg-white text-gray-800 md:px-8 px-3 py-3 md:py-8 rounded-lg shadow-lg">
+          <h2 className="text-xl pb-1 md:text-3xl font-bold text-[#1264a5]">
+            <span className="hidden md:inline"> ✨</span> DAMAC Property Event{" "}
+            <span className="hidden md:inline"> ✨</span>
+          </h2>
           <p className="text-gray-600 mb-6">Registration Form</p>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} >
+          <form onSubmit={handleSubmit}>
             <div className="form-container p-1 relative grid grid-cols-1  md:grid-cols-2 gap-3 md:gap-6 md:h-auto max-h-[50vh] md:overflow-auto overflow-scroll">
               {/* Name */}
               <input
@@ -254,18 +223,16 @@ const DamacPopUp = () => {
                 ))}
               </select>
               {/* Scroll Down Button (Visible only in mobile view) */}
-            <div className="md:hidden flex justify-center mt-4 absolute bottom-0 right-1/2 translate-x-1/2">
-              <button
-                type="button"
-                onClick={scrollDown}
-                className="p-2 bg-logoColor text-white animate-bounce rounded-full shadow-lg hover:bg-logoColor/90 transition-all"
-              >
-                <MdArrowDownward className="text-2xl" />
-              </button>
+              <div className="md:hidden flex justify-center mt-4 fixed bottom-40 z-10 right-1/2 translate-x-1/2">
+                <button
+                  type="button"
+                  onClick={scrollDown}
+                  className="p-2 bg-logoColor text-white animate-bounce rounded-full shadow-lg hover:bg-logoColor/90 transition-all"
+                >
+                  <MdArrowDownward className="text-2xl" />
+                </button>
+              </div>
             </div>
-            </div>
-
-            
 
             <div className=" mt-5">
               <label className="flex items-start md:items-center text-start">
@@ -290,14 +257,14 @@ const DamacPopUp = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="relative w-full mt-5 bg-logoColor hover:bg-logoColor/90 cursor-pointer transition-all py-2 md:py-3 rounded-lg"
+                className="mt-4 relative  px-8 py-3 bg-gradient-to-r transition-all   from-[#5eb239] to-[#1264a5] hover:from-[#1264a5] hover:to-[#5eb239] text-white rounded-lg text-lg font-semibold shadow-md "
               >
                 <div
-                  className={`text-logoColor absolute text-nowrap  right-[50%] translate-x-[50%] transition-all duration-500   -top-8  text-lg font-bold ${
+                  className={`text-logoColor bg-white p-1 absolute text-nowrap  right-[50%] translate-x-[50%] transition-all duration-500   -top-10  text-lg font-bold ${
                     isSubmitted ? "black" : "hidden"
                   }`}
                 >
-                  Enquiry Submitted Successfully!
+                  Send OTP!
                 </div>
                 <span className="font-semibold text-white">Submit</span>
               </button>

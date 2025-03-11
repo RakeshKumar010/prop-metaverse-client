@@ -11,7 +11,7 @@ const DamacEnquiry = () => {
     <div className="bg-gray-100 overflow-y-auto text-black sm:mx-8 px-3 2xl:mx-16 mt-5 md:mt-36 w-full">
       <div className="flex items-center flex-wrap gap-4 justify-between">
         <div className="space-y-1">
-          <p className="text-[30px] font-semibold leading-[45px]"> DAMAC Property Event Enquiry</p>
+          <p className="text-[30px] font-semibold leading-[45px]"> DAMAC property enquiry</p>
           <p className="text-sm leading-[25.9px]">
             We are glad to see you again!
           </p>
