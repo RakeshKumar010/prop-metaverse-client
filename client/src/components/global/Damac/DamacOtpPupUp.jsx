@@ -80,7 +80,7 @@ const DamacOtpPupUp = () => {
                 required
               />
              <div
-                  className={`text-logoColor bg-white p-1 absolute text-nowrap  right-1/2 translate-x-1/2 -bottom-0 transition-all duration-500  text-lg font-bold  ${
+                  className={`text-logoColor bg-white p-1 absolute text-nowrap  right-1/2 translate-x-1/2 md:-bottom-0 bottom-32 transition-all duration-500  text-lg font-bold  ${
                     isSubmitted ? "black" : "hidden"
                   }`}
                 >
