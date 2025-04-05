@@ -2,6 +2,7 @@ import React, { useContext, useCallback } from "react";
 import { GoArrowUpRight } from "react-icons/go";
 import { MyContext } from "../../../App";
 import { IoIosAddCircle } from "react-icons/io";
+const baseUrl = import.meta.env.VITE_APP_URL;
 
 const Media = ({ setIsActive }) => {
   const { formData, setFormData } = useContext(MyContext);
@@ -9,33 +10,36 @@ const Media = ({ setIsActive }) => {
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
 
   // Handle file selection with validation
-  const handleChange = useCallback((e, index) => {
-    const file = e.target.files[0];
-    console.log(`Selected file for index ${index}:`, file); // Debug log
-    if (!file) return;
+  const handleChange = useCallback(
+    (e, index) => {
+      const file = e.target.files[0];
+      console.log(`Selected file for index ${index}:`, file); // Debug log
+      if (!file) return;
 
-    // Validate file size
-    if (file.size > MAX_FILE_SIZE) {
-      alert("File size exceeds 5MB limit");
-      e.target.value = ""; // Reset input
-      return;
-    }
+      // Validate file size
+      if (file.size > MAX_FILE_SIZE) {
+        alert("File size exceeds 5MB limit");
+        e.target.value = ""; // Reset input
+        return;
+      }
 
-    // Validate file type
-    if (!file.type.startsWith("image/")) {
-      alert("Please select an image file");
-      e.target.value = ""; // Reset input
-      return;
-    }
+      // Validate file type
+      if (!file.type.startsWith("image/")) {
+        alert("Please select an image file");
+        e.target.value = ""; // Reset input
+        return;
+      }
 
-    const fileURL = URL.createObjectURL(file);
-    setFormData((prevData) => {
-      const newGalleryImgs = [...(prevData.galleryImg || [])];
-      newGalleryImgs[index] = { file, preview: fileURL };
-      console.log("Updated galleryImg:", newGalleryImgs); // Debug log
-      return { ...prevData, galleryImg: newGalleryImgs };
-    });
-  }, [setFormData]);
+      const fileURL = URL.createObjectURL(file);
+      setFormData((prevData) => {
+        const newGalleryImgs = [...(prevData.galleryImg || [])];
+        newGalleryImgs[index] = { file, preview: fileURL };
+        console.log("Updated galleryImg:", newGalleryImgs); // Debug log
+        return { ...prevData, galleryImg: newGalleryImgs };
+      });
+    },
+    [setFormData]
+  );
 
   // Add new gallery image field with limit check
   const addGalleryImg = useCallback(() => {
@@ -50,17 +54,20 @@ const Media = ({ setIsActive }) => {
   }, [formData.galleryImg, setFormData]);
 
   // Remove gallery image and clean up URL
-  const removeGalleryImg = useCallback((index) => {
-    setFormData((prevData) => {
-      const newGalleryImgs = [...prevData.galleryImg];
-      const removedItem = newGalleryImgs.splice(index, 1)[0];
-      if (removedItem.preview) {
-        URL.revokeObjectURL(removedItem.preview); // Clean up memory
-      }
-      console.log("GalleryImg after removal:", newGalleryImgs); // Debug log
-      return { ...prevData, galleryImg: newGalleryImgs };
-    });
-  }, [setFormData]);
+  const removeGalleryImg = useCallback(
+    (index) => {
+      setFormData((prevData) => {
+        const newGalleryImgs = [...prevData.galleryImg];
+        const removedItem = newGalleryImgs.splice(index, 1)[0];
+        if (removedItem.preview) {
+          URL.revokeObjectURL(removedItem.preview); // Clean up memory
+        }
+        console.log("GalleryImg after removal:", newGalleryImgs); // Debug log
+        return { ...prevData, galleryImg: newGalleryImgs };
+      });
+    },
+    [setFormData]
+  );
 
   return (
     <div className="space-y-5">
@@ -75,46 +82,69 @@ const Media = ({ setIsActive }) => {
 
       <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50 transition-all hover:border-gray-400">
         {formData.galleryImg?.length > 0 ? (
-          formData.galleryImg.map((item, index) => (
-            <div
-              key={index}
-              className="mt-5 flex flex-col gap-3 animate-fadeIn"
-            >
-              <div className="flex items-center justify-between">
-                <label
-                  htmlFor={`galleryImg${index}`}
-                  className="text-[14px] font-semibold"
-                >
-                  Gallery Image {index + 1}
-                </label>
-                <button
-                  onClick={() => removeGalleryImg(index)}
-                  className="text-red-500 hover:text-red-700 text-sm"
-                >
-                  Remove
-                </button>
-              </div>
+          formData.galleryImg.map((item, index) => {
+            // Check if item is a string (from DB) or object (from file input)
+            const isString = typeof item === "string";
+            const isObject = typeof item === "object" && item !== null;
 
-              <div className="relative">
-                <input
-                  type="file"
-                  id={`galleryImg${index}`}
-                  onChange={(e) => handleChange(e, index)}
-                  accept="image/*"
-                  className="border-[1px] px-3 py-3 rounded-lg h-12 border-gray-300 text-sm w-full focus:ring-2 focus:ring-black focus:border-transparent transition-all"
-                />
-                {item.preview && (
-                  <div className="mt-3 flex justify-end">
-                    <img
-                      src={item.preview}
-                      alt={`Gallery ${index + 1}`}
-                      className="w-24 h-24 rounded-md object-cover shadow-sm hover:scale-105 transition-transform"
-                    />
-                  </div>
-                )}
+            // Extract filename if string
+            const fileName = isString ? item.split("/").pop() : null;
+            const fileUrl = isString ? `${baseUrl}/uploads/${fileName}` : null;
+
+            return (
+              <div
+                key={index}
+                className="mt-5 flex flex-col gap-3 animate-fadeIn"
+              >
+                <div className="flex items-center justify-between">
+                  <label
+                    htmlFor={`galleryImg${index}`}
+                    className="text-[14px] font-semibold"
+                  >
+                    Gallery Image {index + 1}
+                  </label>
+                  <button
+                    onClick={() => removeGalleryImg(index)}
+                    className="text-red-500 hover:text-red-700 text-sm"
+                  >
+                    Remove
+                  </button>
+                </div>
+
+                <div className="relative">
+                  <input
+                    type="file"
+                    id={`galleryImg${index}`}
+                    onChange={(e) => handleChange(e, index)}
+                    accept="image/*"
+                    className="border-[1px] px-3 py-3 rounded-lg h-12 border-gray-300 text-sm w-full focus:ring-2 focus:ring-black focus:border-transparent transition-all"
+                  />
+
+                  {/* Show saved image if it's a string and no new image is selected */}
+                  {isString && (
+                    <div className="mt-3 flex justify-end items-center gap-2">
+                      <img
+                        src={fileUrl}
+                        alt={`Gallery ${index + 1}`}
+                        className="w-24 h-24 rounded-md object-cover shadow-sm hover:scale-105 transition-transform"
+                      />
+                    </div>
+                  )}
+
+                  {/* Show new preview if available (overrides saved image) */}
+                  {isObject && item.preview && (
+                    <div className="mt-3 flex justify-end">
+                      <img
+                        src={item.preview}
+                        alt={`Gallery ${index + 1}`}
+                        className="w-24 h-24 rounded-md object-cover shadow-sm hover:scale-105 transition-transform"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="text-center py-8 text-gray-500">
             No images added yet. Click the plus icon to start!
