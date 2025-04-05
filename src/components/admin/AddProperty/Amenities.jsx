@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useCallback } from "react";
 import { GoArrowUpRight } from "react-icons/go";
 import { CiDumbbell } from "react-icons/ci";
 import { FaCloudSunRain } from "react-icons/fa6";
@@ -12,6 +12,7 @@ import { TbMichelinStarGreen } from "react-icons/tb";
 import { MyContext } from "../../../App";
 import { useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
+
 const baseUrl = import.meta.env.VITE_APP_URL;
 
 const amenitiesData = [
@@ -20,7 +21,7 @@ const amenitiesData = [
   { icon: <GiRailway />, text: "Multipurpose court" },
   { icon: <GiKidSlide />, text: "Kids' play area" },
   { icon: <LuPartyPopper />, text: "Party hall" },
-  { icon: <MdPool />, text: "Kids' pool " },
+  { icon: <MdPool />, text: "Kids' pool" },
   { icon: <MdElderlyWoman />, text: "Elderly corner" },
   { icon: <TbMichelinStarGreen />, text: "Green landscaping" },
   { icon: <GiCctvCamera />, text: "CCTV in key areas" },
@@ -30,98 +31,133 @@ const amenitiesData = [
   { icon: <FaCloudSunRain />, text: "Rainwater harvesting" },
   { icon: <GrCafeteria />, text: "Cafe" },
 ];
+
+const initialFormData = {
+  title: "",
+  description: "",
+  propertyType: "",
+  status: "",
+  constructionYear: "",
+  price: "",
+  discount: "",
+  galleryImg: [],
+  address: "",
+  state: "",
+  city: "",
+  floorPlan: [{ type: "", carpetArea: "", price: "" }],
+  faqs: [{ question: "", answer: "" }],
+  keywords: [{ heading: "", keyword: [] }],
+  amenities: [],
+  createrId: "",
+};
+
 const Amenities = ({ action }) => {
   const { formData, setFormData } = useContext(MyContext);
   const { pathname } = useLocation();
   const id = pathname.split("/").pop();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission
-    console.log(formData);
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user && user._id) {
+      setFormData((prev) => ({ ...prev, createrId: user._id }));
+    }
+  }, [setFormData]);
 
-    if (action === "edit") {
-      const response = await fetch(baseUrl + "/edit-property/" + id, {
-        method: "put",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData), // Send formData as JSON
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      const formDataToSend = new FormData();
+
+      // Helper function to append only valid values
+      const appendIfValid = (key, value) => {
+        if (value !== undefined && value !== null && value !== "") {
+          formDataToSend.append(key, value);
+        }
+      };
+
+      appendIfValid("title", formData.title);
+      appendIfValid("createrId", formData.createrId);
+      appendIfValid("description", formData.description);
+      appendIfValid("propertyType", formData.propertyType);
+      appendIfValid("status", formData.status);
+      appendIfValid("constructionYear", formData.constructionYear);
+      appendIfValid("price", formData.price); // Ensure price is not empty or invalid
+      appendIfValid("discount", formData.discount);
+      appendIfValid("address", formData.address);
+      appendIfValid("state", formData.state);
+      appendIfValid("city", formData.city);
+
+      // Handle galleryImg as file objects
+      formData.galleryImg.forEach((img, index) => {
+        if (img?.file) {
+          formDataToSend.append(`galleryImg[${index}]`, img.file);
+        }
       });
-      if (response.ok) {
-        // Optionally reset form data or provide user feedback
-        setFormData({
-          // Basic Property Information
-          title: "",
-          description: "",
-          propertyType: "",
-          status: "",
-          constructionYear: "",
-          price: [],
-          discount: "",
 
-          // Media
-          galleryImg: [{ name: "" }],
+      // Handle floorPlan with validation
+      formData.floorPlan.forEach((plan, index) => {
+        appendIfValid(`floorPlan[${index}][type]`, plan.type);
+        appendIfValid(`floorPlan[${index}][carpetArea]`, plan.carpetArea);
+        appendIfValid(`floorPlan[${index}][price]`, plan.price);
+      });
 
-          // Location Details
-          address: "",
-          state: "",
-          city: "",
+      formData.faqs.forEach((faq, index) => {
+        appendIfValid(`faqs[${index}][question]`, faq.question);
+        appendIfValid(`faqs[${index}][answer]`, faq.answer);
+      });
 
-          //Details
-          floorPlan: [{ type: "", carpetArea: "", price: "" }],
-          faqs: [{ question: "", answer: "" }],
-
-          // keyword
-          keywords: [{ heading: "", keyword: [] }],
-
-          // amenities
-          amenities: [],
+      formData.keywords.forEach((keyword, index) => {
+        appendIfValid(`keywords[${index}][heading]`, keyword.heading);
+        keyword.keyword.forEach((kw, kwIndex) => {
+          appendIfValid(`keywords[${index}][keyword][${kwIndex}]`, kw);
         });
-        Swal.fire({
-          title: "Success!",
-          text: "Property edited successfully",
-          confirmButtonColor: "#036672",
-          icon: "success",
-          customClass: {
-            confirmButton:
-              "bg-black shadow-gray-600 hover:shadow-lg transition-all duration-200 py-2 px-10 mt-4 text-white rounded-md hover:scale-110",
-          },
-          buttonsStyling: false,
-        });
-      } else {
-        // Handle validation or server errors
-        const errorData = await response.json();
-        console.error("Error adding property:", errorData);
+      });
 
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Failed to add property",
-          customClass: {
-            confirmButton:
-              "bg-black shadow-gray-600 hover:shadow-lg transition-all duration-200 py-2 px-10 mt-4 text-white rounded-md hover:scale-110",
-          },
-        });
+      formData.amenities.forEach((amenity, index) => {
+        appendIfValid(`amenities[${index}]`, amenity);
+      });
+
+      // Log FormData for debugging
+      const formDataObj = {};
+      for (const [key, value] of formDataToSend.entries()) {
+        if (formDataObj[key]) {
+          if (Array.isArray(formDataObj[key])) {
+            formDataObj[key].push(value);
+          } else {
+            formDataObj[key] = [formDataObj[key], value];
+          }
+        } else {
+          formDataObj[key] = value;
+        }
       }
-    } else {
+      console.log("FormData Object:", formDataObj);
+
+      const apiUrl =
+        action === "edit"
+          ? `${baseUrl}/edit-property/${id}`
+          : `${baseUrl}/add-property`;
+      const method = action === "edit" ? "PUT" : "POST";
+
       try {
-        // Make API call to submit the form data
-        const response = await fetch(baseUrl + "/add-property", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData), // Send formData as JSON
+        const response = await fetch(apiUrl, {
+          method,
+          body: formDataToSend,
         });
 
-        // Handle the response
         if (response.ok) {
-          const result = await response.json();
-          console.log("Property added successfully:", result);
+          const successMessage =
+            action === "edit"
+              ? "Property edited successfully"
+              : "Property added successfully";
+          if (action !== "edit") {
+            const result = await response.json();
+            console.log("Property added successfully:", result);
+          }
 
+          setFormData(initialFormData); // Reset to initial state
           Swal.fire({
             title: "Success!",
-            text: "Property added successfully",
+            text: successMessage,
             confirmButtonColor: "#036672",
             icon: "success",
             customClass: {
@@ -130,44 +166,17 @@ const Amenities = ({ action }) => {
             },
             buttonsStyling: false,
           });
-
-          // Optionally reset form data or provide user feedback
-          setFormData({
-            // Basic Property Information
-            title: "",
-            description: "",
-            propertyType: "",
-            status: "",
-            constructionYear: "",
-            price: [],
-            discount: "",
-
-            // Media
-            galleryImg: [{ name: "" }],
-
-            // Location Details
-            address: "",
-            state: "",
-            city: "",
-
-            //Details
-            floorPlan: [{ type: "", carpetArea: "", price: "" }],
-            faqs: [{ question: "", answer: "" }],
-
-            // keyword
-            keywords: [{ heading: "", keyword: [] }],
-
-            // amenities
-            amenities: [],
-          });
         } else {
-          // Handle validation or server errors
           const errorData = await response.json();
-
+          console.error(
+            `Error ${action === "edit" ? "editing" : "adding"} property:`,
+            errorData
+          );
           Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: "Failed to add property",
+            text: `Failed to ${action === "edit" ? "edit" : "add"} property`,
+            confirmButtonColor: "#000",
             customClass: {
               confirmButton:
                 "bg-black shadow-gray-600 hover:shadow-lg transition-all duration-200 py-2 px-10 mt-4 text-white rounded-md hover:scale-110",
@@ -175,79 +184,71 @@ const Amenities = ({ action }) => {
           });
         }
       } catch (error) {
-        // Handle network or unexpected errors
         console.error("Network error:", error);
         Swal.fire({
           icon: "error",
           title: "Oops...",
-          text: "Failed to add property",
+          text: `Failed to ${action === "edit" ? "edit" : "add"} property`,
+          confirmButtonColor: "#000",
           customClass: {
             confirmButton:
               "bg-black shadow-gray-600 hover:shadow-lg transition-all duration-200 py-2 px-10 mt-4 text-white rounded-md hover:scale-110",
           },
         });
       }
-    }
-  };
-  // Determine if all amenities are selected
+    },
+    [action, formData, id, setFormData]
+  );
+
+  const handleSelectAllToggle = useCallback(() => {
+    setFormData((prevData) => ({
+      ...prevData,
+      amenities:
+        prevData.amenities.length === amenitiesData.length
+          ? []
+          : amenitiesData.map((amenity) => amenity.text),
+    }));
+  }, [setFormData]);
+
+  const handleChange = useCallback(
+    (e) => {
+      const { id, checked } = e.target;
+      setFormData((prevData) => ({
+        ...prevData,
+        amenities: checked
+          ? [...prevData.amenities, id]
+          : prevData.amenities.filter((amenity) => amenity !== id),
+      }));
+    },
+    [setFormData]
+  );
+
   const isAllSelected = formData.amenities.length === amenitiesData.length;
 
-  // Handle toggling the "Select All" checkbox
-  const handleSelectAllToggle = () => {
-    if (isAllSelected) {
-      // Deselect all
-      setFormData((prevData) => ({
-        ...prevData,
-        amenities: [],
-      }));
-    } else {
-      // Select all
-      const allAmenities = amenitiesData.map((amenity) => amenity.text);
-      setFormData((prevData) => ({
-        ...prevData,
-        amenities: allAmenities,
-      }));
-    }
-  };
-
-  // Handle individual checkbox toggle
-  const handleChange = (e) => {
-    const { id, checked } = e.target;
-
-    setFormData((prevData) => {
-      const updatedAmenities = checked
-        ? [...(prevData.amenities || []), id]
-        : (prevData.amenities || []).filter((amenity) => amenity !== id);
-
-      return {
-        ...prevData,
-        amenities: updatedAmenities,
-      };
-    });
-  };
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="flex items-center justify-between">
         <p className="text-[17px] leading-[25.5px] font-semibold">
           Select Amenities
         </p>
-
-        <div className="flex   items-center gap-2 ">
+        <div className="flex items-center gap-2">
           <input
-            onClick={handleSelectAllToggle}
+            onChange={handleSelectAllToggle}
             type="checkbox"
             id="select-all"
             className="w-4 cursor-pointer rounded h-4"
             checked={isAllSelected}
+            aria-label="Select all amenities"
           />
-          <label htmlFor="select-all">Select All</label>
+          <label htmlFor="select-all" className="cursor-pointer">
+            Select All
+          </label>
         </div>
       </div>
-
-      <div className="grid md:grid-cols-2 grid-cols-1 lg:grid-cols-3 gap-5">
-        {amenitiesData.map(({ icon, text }, index) => {
-          return (
-            <div key={index} className="flex gap-1 items-start">
+      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50 transition-all hover:border-gray-400">
+        <div className="grid md:grid-cols-2 grid-cols-1 lg:grid-cols-3 gap-5">
+          {amenitiesData.map(({ icon, text }, index) => (
+            <div key={text} className="flex gap-1 items-start">
               <input
                 id={text}
                 type="checkbox"
@@ -262,10 +263,9 @@ const Amenities = ({ action }) => {
                 {icon} {text}
               </label>
             </div>
-          );
-        })}
+          ))}
+        </div>
       </div>
-
       <div className="flex justify-start">
         <button
           type="submit"

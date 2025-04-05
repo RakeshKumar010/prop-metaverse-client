@@ -12,6 +12,7 @@ import AddUser from "../components/admin/pages/AddUser";
 import NotFound from "../pages/NotFound";
 import DamacEnquiry from "../components/admin/pages/DamacEnquiry";
 import AddProperty from "../components/admin/pages/AddProperty";
+import Property from "../components/admin/pages/Property";
 
 const Layout = () => {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -43,6 +44,7 @@ const Layout = () => {
           <Route path="we-enquiry" element={<WeEnquiry />} />
           <Route path="damac-enquiry" element={<DamacEnquiry />} />
           <Route path="user" element={<User />} />
+          <Route path="property" element={<Property />} />
           <Route path="add-user" element={<AddUser />} />
           <Route path="user/:id" element={<AddUser action={"edit"} />} />
 

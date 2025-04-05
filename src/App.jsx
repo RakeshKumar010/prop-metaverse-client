@@ -16,11 +16,11 @@ const App = () => {
     propertyType: "",
     status: "",
     constructionYear: "",
-    price: [],
+    price: "",
     discount: "",
 
     // Media
-    galleryImg: [{ name: "" }],
+    galleryImg: [],
 
     // Location Details
     address: "",

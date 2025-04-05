@@ -1,7 +1,7 @@
 import React, { useContext, useCallback } from "react";
 import { GoArrowUpRight } from "react-icons/go";
 import { MyContext } from "../../../App";
-import { IoIosAddCircle, IoIosRemoveCircle } from "react-icons/io";
+import { IoIosAddCircle } from "react-icons/io";
 
 const Media = ({ setIsActive }) => {
   const { formData, setFormData } = useContext(MyContext);
@@ -60,7 +60,7 @@ const Media = ({ setIsActive }) => {
   }, [setFormData]);
 
   return (
-    <div className="space-y-6 p-4">
+    <div className="space-y-5">
       <div className="flex items-center justify-between">
         <p className="text-[17px] leading-[25.5px] font-semibold text-gray-800">
           Upload photos of your property
@@ -80,7 +80,7 @@ const Media = ({ setIsActive }) => {
               <div className="flex items-center justify-between">
                 <label
                   htmlFor={`galleryImg${index}`}
-                  className="text-[14px] font-semibold text-gray-700"
+                  className="text-[14px] font-semibold "
                 >
                   Gallery Image {index + 1}
                 </label>
@@ -130,7 +130,7 @@ const Media = ({ setIsActive }) => {
       <div className="flex justify-start">
         <button
           onClick={() => setIsActive(3)}
-          className="text-[15px] px-6 py-3 flex items-center bg-black rounded-lg text-white hover:bg-opacity-90 transition-colors"
+          className="text-[15px] px-2 md:px-5 py-4 flex mt-5   items-center bg-black rounded-lg text-white"
         >
           Next
           <GoArrowUpRight className="text-xl ml-1" />

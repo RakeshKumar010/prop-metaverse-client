@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { CgProfile } from "react-icons/cg";
 import { FiCompass } from "react-icons/fi";
 import { IoMenu } from "react-icons/io5";
-import { LuUserRoundPlus } from "react-icons/lu";
+import { LuBuilding2, LuUserRoundPlus } from "react-icons/lu";
 import {
   MdOutlineAdminPanelSettings,
   MdOutlineMarkUnreadChatAlt,
@@ -50,6 +50,7 @@ const Sidebar = () => {
               link: "/user",
             }
           : null,
+          { icon: <LuBuilding2 />, label: "Property", link: "/property" },
       ].filter(Boolean),
     },
     {
@@ -194,7 +195,7 @@ const Sidebar = () => {
       </div>
 
       {/* Mobile View */}
-      <div className="block lg:hidden mt-10 sm:mx-8 mx-3 md:mx-16">
+      <div className="block lg:hidden mt-10 sm:mx-8 mx-3 lg:mx-16">
         <button
           onClick={() => setIsAdminNav(!isAdminNav)}
           className="flex w-full items-center mb-5 gap-2 bg-white shadow-md p-5 rounded-lg cursor-pointer"
