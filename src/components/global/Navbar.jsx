@@ -143,8 +143,8 @@ const Navbar = () => {
           </ul>
         </nav>
       </header>
-      {/* {isPopUpOpen ? <Popup /> : null}
-      {damacIsPopUpOpen ? <DamacPopUp /> : null} */}
+      {isPopUpOpen ? <Popup /> : null}
+      {damacIsPopUpOpen ? <DamacPopUp /> : null}
     </>
   );
 };
