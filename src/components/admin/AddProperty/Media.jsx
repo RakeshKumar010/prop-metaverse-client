@@ -11,6 +11,7 @@ const Media = ({ setIsActive }) => {
   // Handle file selection with validation
   const handleChange = useCallback((e, index) => {
     const file = e.target.files[0];
+    console.log(`Selected file for index ${index}:`, file); // Debug log
     if (!file) return;
 
     // Validate file size
@@ -31,6 +32,7 @@ const Media = ({ setIsActive }) => {
     setFormData((prevData) => {
       const newGalleryImgs = [...(prevData.galleryImg || [])];
       newGalleryImgs[index] = { file, preview: fileURL };
+      console.log("Updated galleryImg:", newGalleryImgs); // Debug log
       return { ...prevData, galleryImg: newGalleryImgs };
     });
   }, [setFormData]);
@@ -55,6 +57,7 @@ const Media = ({ setIsActive }) => {
       if (removedItem.preview) {
         URL.revokeObjectURL(removedItem.preview); // Clean up memory
       }
+      console.log("GalleryImg after removal:", newGalleryImgs); // Debug log
       return { ...prevData, galleryImg: newGalleryImgs };
     });
   }, [setFormData]);
@@ -80,7 +83,7 @@ const Media = ({ setIsActive }) => {
               <div className="flex items-center justify-between">
                 <label
                   htmlFor={`galleryImg${index}`}
-                  className="text-[14px] font-semibold "
+                  className="text-[14px] font-semibold"
                 >
                   Gallery Image {index + 1}
                 </label>
@@ -91,7 +94,7 @@ const Media = ({ setIsActive }) => {
                   Remove
                 </button>
               </div>
-              
+
               <div className="relative">
                 <input
                   type="file"
@@ -130,7 +133,7 @@ const Media = ({ setIsActive }) => {
       <div className="flex justify-start">
         <button
           onClick={() => setIsActive(3)}
-          className="text-[15px] px-2 md:px-5 py-4 flex mt-5   items-center bg-black rounded-lg text-white"
+          className="text-[15px] px-2 md:px-5 py-4 flex mt-5 items-center bg-black rounded-lg text-white"
         >
           Next
           <GoArrowUpRight className="text-xl ml-1" />

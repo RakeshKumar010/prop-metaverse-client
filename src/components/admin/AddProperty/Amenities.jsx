@@ -81,16 +81,20 @@ const Amenities = ({ action }) => {
       appendIfValid("propertyType", formData.propertyType);
       appendIfValid("status", formData.status);
       appendIfValid("constructionYear", formData.constructionYear);
-      appendIfValid("price", formData.price); // Ensure price is not empty or invalid
+      appendIfValid("price", formData.price);
       appendIfValid("discount", formData.discount);
       appendIfValid("address", formData.address);
       appendIfValid("state", formData.state);
       appendIfValid("city", formData.city);
 
-      // Handle galleryImg as file objects
+      // Handle galleryImg as file objects with better logging
+      console.log("galleryImg before submission:", formData.galleryImg);
       formData.galleryImg.forEach((img, index) => {
         if (img?.file) {
-          formDataToSend.append(`galleryImg[${index}]`, img.file);
+          console.log(`Appending galleryImg[${index}]:`, img.file);
+          formDataToSend.append("galleryImg", img.file); // Use "galleryImg" as the key
+        } else {
+          console.log(`No file at galleryImg[${index}]`);
         }
       });
 
