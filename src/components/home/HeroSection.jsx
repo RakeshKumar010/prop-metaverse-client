@@ -207,16 +207,16 @@ const HeroSection = () => {
         </div>
       )}
 
-      {/* Custom Arrows */}
-      <div className="flex md:block gap-4 sm:gap-5 z-10 absolute bottom-0 right-1/2 translate-x-1/2 md:right-0 md:translate-0 md:static justify-center items-center w-full  md:mt-0">
+       {/* Custom Arrows */}
+       <div className="flex md:block gap-5 z-10 md:static absolute bottom-0 md:bottom-auto right-1/2 md:right-auto translate-x-1/2 md:translate-[auto] justify-center items-center w-full ">
         <button
-          className="md:absolute md:top-1/2 md:left-4 lg:left-20 md:transform md:-translate-y-1/2 bg-black/50 hover:bg-white/40 text-white p-2 sm:p-3 rounded-full"
+          className="md:absolute md:top-1/2 md:left-20 md:transform md:-translate-y-1/2 bg-black/50 hover:bg-white/40 text-white p-2 sm:p-3 rounded-full md:rounded-none "
           onClick={() => sliderRef.current.slickPrev()}
         >
           <FaChevronLeft size={20} sm:size={24} />
         </button>
         <button
-          className="md:absolute md:top-1/2 md:right-4 lg:right-20 md:transform md:-translate-y-1/2 bg-black/50 hover:bg-white/40 text-white p-2 sm:p-3 rounded-full"
+          className="md:absolute md:top-1/2 md:right-20 md:transform md:-translate-y-1/2 bg-black/50 hover:bg-white/40 text-white p-2 sm:p-3 rounded-full md:rounded-none "
           onClick={() => sliderRef.current.slickNext()}
         >
           <FaChevronRight size={20} sm:size={24} />
