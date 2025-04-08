@@ -4,6 +4,8 @@ import { FiCompass } from "react-icons/fi";
 import { IoMenu } from "react-icons/io5";
 import { LuBuilding2, LuUserRoundPlus } from "react-icons/lu";
 import {
+  MdContentCopy,
+  MdContentPaste,
   MdOutlineAdminPanelSettings,
   MdOutlineMarkUnreadChatAlt,
 } from "react-icons/md";
@@ -50,14 +52,24 @@ const Sidebar = () => {
               link: "/user",
             }
           : null,
+        user?.userType === "Admin"
+          ? {
+              icon: <MdContentCopy />,
+              label: "Heros",
+              link: "/hero",
+            }
+          : null,
           { icon: <LuBuilding2 />, label: "Property", link: "/property" },
       ].filter(Boolean),
     },
     {
-      title: "Account",
+      title: "Opratations",
       items: [
         user?.userType === "Admin"
           ? { icon: <LuUserRoundPlus />, label: "Add User", link: "/add-user" }
+          : null,
+        user?.userType === "Admin"
+          ? { icon: <MdContentPaste />, label: "Add Hero", link: "/add-hero" }
           : null,
         { icon: <BsBuildingAdd />, label: "Add Property", link: "/add-property" },
         { icon: <CgProfile />, label: "My Profile", link: "/my-profile" },
@@ -103,7 +115,7 @@ const Sidebar = () => {
     }
 
     if (
-      user.userType === "Content" &&
+      user.userType === "Hero" &&
       !["/my-profile", "/"].includes(`/${lastEndpoint}`)
     ) {
       navigate("/admin");
