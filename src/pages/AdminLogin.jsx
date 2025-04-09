@@ -7,13 +7,13 @@ const baseUrl = import.meta.env.VITE_APP_URL;
 const AdminLogin = ({ setIsAdmin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false); // Changed to boolean for clarity
+  const [loading, setLoading] = useState(0);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const [errors, setErrors] = useState({});
-  const [apiError, setApiError] = useState("");
+  const [apiError, setApiError] = useState(""); // State for API error message
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -32,15 +32,15 @@ const AdminLogin = ({ setIsAdmin }) => {
     }
 
     setErrors(newErrors);
-    setApiError("");
+    setApiError(""); // Clear API error on input change
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setLoading(1);
 
     try {
-      const response = await fetch(`${baseUrl}/login-user`, {
+      const result = await fetch(baseUrl + "/login-user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -48,37 +48,24 @@ const AdminLogin = ({ setIsAdmin }) => {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // Check if user is an admin (optional, since backend already checks)
-        if (data.data.userType !== "Admin") {
-          setApiError("Access denied: Admin only");
-          setLoading(false);
-          return;
-        }
-
+      if (result.ok) {
         setIsAdmin(true);
-        // Store minimal user data in localStorage (avoid storing password)
-        const userData = {
-          _id: data.data._id,
-          username: data.data.username,
-          email: data.data.email,
-          userType: data.data.userType,
-        };
-        localStorage.setItem("user", JSON.stringify(userData));
-        setLoading(false);
+        const data = await result.json();
+        localStorage.setItem("user", JSON.stringify(data));
+        setLoading(0);
         navigate("/admin");
 
-        setFormData({ email: "", password: "" });
+        setFormData({
+          email: "",
+          password: "",
+        });
       } else {
-        setLoading(false);
-        setApiError(data.error || "Invalid email or password");
+        setLoading(0);
+        setApiError("Invalid email or password"); // Set API error
       }
     } catch (error) {
-      setLoading(false);
-      setApiError("An error occurred. Please try again.");
-      console.error("Login error:", error);
+      setLoading(0);
+      setApiError("An error occurred. Please try again."); // Handle network errors
     }
   };
 
@@ -86,12 +73,15 @@ const AdminLogin = ({ setIsAdmin }) => {
     <div className="cursor-pointer min-h-screen w-full flex items-center justify-center bg-gray-100">
       <div className="login-child-div w-full max-w-md p-6 z-10 bg-white rounded-2xl relative shadow-2xl transform transition-all duration-300 ease-in-out">
         <h2 className="text-lg font-semibold leading-[27px] text-center mb-8">
-          Welcome Back, Admin
+          Welcome Back
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-2 text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium mb-2 text-gray-700"
+            >
               Email Address
             </label>
             <input
@@ -100,7 +90,7 @@ const AdminLogin = ({ setIsAdmin }) => {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className={`mt-1 block w-full px-3 md:min-h-[3.75rem] min-h-[3.5rem] py-2 md:py-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black ${
+              className={`mt-1 block w-full px-3  md:min-h-[3.75rem] min-h-[3.5rem] py-2 md:py-3  border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black ${
                 errors.email ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="email@example.com"
@@ -116,7 +106,10 @@ const AdminLogin = ({ setIsAdmin }) => {
           </div>
 
           <div className="relative">
-            <label htmlFor="password" className="block text-sm font-medium mb-2 text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium mb-2 text-gray-700"
+            >
               Password
             </label>
             <div className="relative">
@@ -126,7 +119,7 @@ const AdminLogin = ({ setIsAdmin }) => {
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className="mt-1 block w-full px-3 md:min-h-[3.75rem] min-h-[3.5rem] py-2 md:py-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black border-gray-300"
+                className="mt-1 block w-full px-3  md:min-h-[3.75rem] min-h-[3.5rem] py-2 md:py-3  border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black border-gray-300"
                 placeholder="••••••••"
                 required
               />
@@ -136,21 +129,33 @@ const AdminLogin = ({ setIsAdmin }) => {
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
+                {showPassword ? (
+                  <AiOutlineEyeInvisible size={20} />
+                ) : (
+                  <AiOutlineEye size={20} />
+                )}
               </button>
             </div>
           </div>
 
+          {/* Display API Error */}
           {apiError && (
             <p className="text-sm text-red-600 text-center">{apiError}</p>
           )}
 
+
+         
+
+
+
+
           <button
-            type="submit"
-            disabled={loading || Object.keys(errors).length > 0}
-            className="relative z-[2] text-white overflow-hidden text-base leading-[1.1] font-bold font-secondary tracking-wide uppercase [transition:all_0.3s_linear] inline-flex items-center justify-center gap-3 md:min-h-[3.75rem] min-h-[3.5rem] py-2 md:py-3 px-6 md:px-7 transition-colors ease-in-out ring-offset-logoColor focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-logoColor after:absolute after:h-full after:w-0 after:bottom-0 after:right-0 after:bg-black/[.15] after:-z-1 after:[transition:all_.3s_ease-in-out] hover:text-white hover:after:w-full hover:after:left-0 rounded-[5px] w-full"
-          >
-            {loading ? (
+           type="submit"
+           disabled={loading || Object.keys(errors).length > 0}
+           className="relative z-[2] text-white   overflow-hidden text-base leading-[1.1] font-bold font-secondary tracking-wide uppercase [transition:all_0.3s_linear] inline-flex items-center justify-center gap-3 md:min-h-[3.75rem] min-h-[3.5rem] py-2 md:py-3 px-6 md:px-7  transition-colors ease-in-out ring-offset-logoColor focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-logoColor after:absolute after:h-full after:w-0 after:bottom-0 after:right-0 after:bg-black/[.15] after:-z-1 after:[transition:all_.3s_ease-in-out] hover:text-white hover:after:w-full hover:after:left-0 rounded-[5px] w-full"
+        
+        >
+        {loading ? (
               <div className="flex items-center justify-center">
                 <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin"></div>
                 <span className="ml-2 z-10 relative">Loading...</span>
@@ -158,7 +163,7 @@ const AdminLogin = ({ setIsAdmin }) => {
             ) : (
               <span className="z-10 relative">Sign In</span>
             )}
-          </button>
+        </button>
         </form>
       </div>
     </div>
