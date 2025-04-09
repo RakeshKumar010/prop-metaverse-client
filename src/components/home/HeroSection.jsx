@@ -15,6 +15,7 @@ const HeroSection = () => {
   const { propertyData, setDamacIsPopUpOpen } = useContext(MyContext);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [heroData, setHeroData] = useState([]);
   const navigate = useNavigate();
   const sliderRef = useRef(null);
 
@@ -28,6 +29,22 @@ const HeroSection = () => {
     autoplay: true,
     autoplaySpeed: 5000,
   };
+
+  // Fetch hero data from API
+  useEffect(() => {
+    const fetchHeroData = async () => {
+      try {
+        const response = await fetch("https://server.propmetaverse.com/hero");
+        const data = await response.json();
+        setHeroData(Array.isArray(data) ? data : [data]);
+      } catch (error) {
+        console.error("Error fetching hero data:", error);
+        setHeroData([]); // Ensure heroData is empty on error
+      }
+    };
+
+    fetchHeroData();
+  }, []);
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -52,7 +69,8 @@ const HeroSection = () => {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (selectedIndex >= 0 && filteredData[selectedIndex]) {
-      const { title, developer, fullAddress, _id } = filteredData[selectedIndex];
+      const { title, developer, fullAddress, _id } =
+        filteredData[selectedIndex];
       navigate(
         ("/" + title.replace(/\s+/g, "-")).toLowerCase() +
           "-by-" +
@@ -89,57 +107,95 @@ const HeroSection = () => {
       style={{ backgroundImage: `url(${Herobg})` }}
     >
       <div className="bg-gradient-to-t absolute inset-0 to-[#061a33] from-[#173306]/80"></div>
-      
+
       {/* Slider */}
       <Slider ref={sliderRef} {...settings}>
-        {[1, 2, 3, 4].map((_, index) => (
-          <div key={index}>
-            <div className="flex flex-col-reverse md:flex-row items-center h-full justify-between p-4 sm:p-6 md:p-8 lg:p-10 gap-6 md:gap-10">
-              <div className="w-full md:w-1/2 lg:max-w-[670px] text-white">
-                <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold">
-                  Penthouse Apartment with 5 Rooms in Kharadi, Pune
-                </h2>
-                <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg">
-                  Penthouse apartment for sale located on Baner Road. With
-                  this property, you can enjoy proximity to Baner Hill Forest
-                  and the benefits of a luxury residential area. Lorem ipsum
-                  dolor, sit amet consectetur adipisicing elit.
-                </p>
-                <div className="mt-4 sm:mt-6 flex flex-wrap gap-3 sm:gap-4">
-                  <button
-                    onClick={() => {
-                      setDamacIsPopUpOpen(true) 
-                      
-                    }}
-                    className="bg-logoColor hover:bg-logoColor/90 text-white px-4 py-2 sm:px-6 sm:py-3 rounded text-sm sm:text-base"
-                  >
-                    Event Enquiry
-                  </button>
-                  <button className="px-4 py-2 sm:px-6 sm:py-3 rounded hover:bg-white md:bg-transparent bg-white md:text-white text-black hover:text-black text-sm sm:text-base">
-                    See All Apartments
-                  </button>
-                </div>
-              </div>
+        {heroData.length > 0
+          ? heroData.map((item, index) => (
+              <div key={index}>
+                <div className="flex flex-col-reverse md:flex-row items-center h-full justify-between p-4 sm:p-6 md:p-8 lg:p-10 gap-6 md:gap-10">
+                  <div className="w-full md:w-1/2 lg:max-w-[670px] text-white">
+                    <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold">
+                      {item.title}
+                    </h2>
+                    <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg">
+                      {item.description}
+                    </p>
+                    <div className="mt-4 sm:mt-6 flex flex-wrap gap-3 sm:gap-4">
+                      <button
+                        onClick={() => setDamacIsPopUpOpen(true)}
+                        className="bg-logoColor hover:bg-logoColor/90 text-white px-4 py-2 sm:px-6 sm:py-3 rounded text-sm sm:text-base"
+                      >
+                        Event Enquiry
+                      </button>
+                      <button className="px-4 py-2 sm:px-6 sm:py-3 rounded hover:bg-white md:bg-transparent bg-white md:text-white text-black hover:text-black text-sm sm:text-base">
+                        See All Apartments
+                      </button>
+                    </div>
+                  </div>
 
-              {/* Right Side Image with Price Tag */}
-              <div className="w-60 sm:w-72 md:w-80 lg:w-96 h-60 sm:h-72 md:h-80 lg:h-96 relative">
-                <div className="relative rounded-full overflow-hidden">
-                  <img
-                    src={SliderImg1}
-                    alt="Penthouse"
-                    className="w-full h-full object-cover rounded-full border-4 sm:border-5 border-white shadow-lg"
-                  />
-                  <div className="text-end text-xs sm:text-sm md:text-base lg:text-lg mt-2 sm:mt-3 absolute bottom-12 sm:bottom-14 md:bottom-16 left-0 right-0 md:pr-12 pr-6 bg-white font-bold text-gray-400 p-2 sm:p-3 md:p-4">
-                    PENTHOUSE APARTMENT
+                  <div className="w-60 sm:w-72 md:w-80 lg:w-96 h-60 sm:h-72 md:h-80 lg:h-96 relative shadow-[0_0_20px] shadow-white/80 rounded-full">
+                    <div className="relative rounded-full overflow-hidden">
+                      <img
+                        src={item.image_url}
+                        alt={item.title}
+                        className="w-full h-full object-cover rounded-full border-4 sm:border-5 border-white shadow-lg"
+                      />
+                      <div className="text-end text-xs sm:text-sm md:text-base lg:text-lg mt-2 sm:mt-3 absolute bottom-12 sm:bottom-14 md:bottom-16 left-0 right-0 md:pr-24 pr-6 bg-white font-bold text-gray-400 p-2 sm:p-3 md:p-4">
+                        {item.property_type.toUpperCase()}
+                      </div>
+                    </div>
+                    <div className="absolute left-0 bottom-4 sm:bottom-6 md:bottom-7 border-4 sm:border-5 border-white bg-logoColor w-24 sm:w-28 md:w-32 h-24 sm:h-28 md:h-32 flex items-center justify-center z-10 text-white px-3 py-2 rounded-full text-sm sm:text-base md:text-lg font-semibold">
+                      {item.price}
+                    </div>
                   </div>
                 </div>
-                <div className="absolute left-0 bottom-4 sm:bottom-6 md:bottom-7 border-4 sm:border-5 border-white bg-logoColor w-24 sm:w-28 md:w-32 h-24 sm:h-28 md:h-32 flex items-center justify-center z-10 text-white px-3 py-2 rounded-full text-sm sm:text-base md:text-lg font-semibold">
-                  ₹13,200,00
+              </div>
+            ))
+          : [1, 2, 3, 4].map((_, index) => (
+              <div key={index}>
+                <div className="flex flex-col-reverse md:flex-row items-center h-full justify-between p-4 sm:p-6 md:p-8 lg:p-10 gap-6 md:gap-10">
+                  <div className="w-full md:w-1/2 lg:max-w-[670px] text-white">
+                    <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold">
+                      Penthouse Apartment with 5 Rooms in Kharadi, Pune
+                    </h2>
+                    <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg">
+                      Penthouse apartment for sale located on Baner Road. With
+                      this property, you can enjoy proximity to Baner Hill
+                      Forest and the benefits of a luxury residential area.
+                      Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+                    </p>
+                    <div className="mt-4 sm:mt-6 flex flex-wrap gap-3 sm:gap-4">
+                      <button
+                        onClick={() => setDamacIsPopUpOpen(true)}
+                        className="bg-logoColor hover:bg-logoColor/90 text-white px-4 py-2 sm:px-6 sm:py-3 rounded text-sm sm:text-base"
+                      >
+                        Event Enquiry
+                      </button>
+                      <button className="px-4 py-2 sm:px-6 sm:py-3 rounded hover:bg-white md:bg-transparent bg-white md:text-white text-black hover:text-black text-sm sm:text-base">
+                        See All Apartments
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="w-60 sm:w-72 md:w-80 lg:w-96 h-60 sm:h-72 md:h-80 lg:h-96 relative">
+                    <div className="relative rounded-full overflow-hidden">
+                      <img
+                        src={SliderImg1}
+                        alt="Penthouse"
+                        className="w-full h-full object-cover rounded-full border-4 sm:border-5 border-white shadow-lg"
+                      />
+                      <div className="text-end text-xs sm:text-sm md:text-base lg:text-lg mt-2 sm:mt-3 absolute bottom-12 sm:bottom-14 md:bottom-16 left-0 right-0 md:pr-12 pr-6 bg-white font-bold text-gray-400 p-2 sm:p-3 md:p-4">
+                        PENTHOUSE APARTMENT
+                      </div>
+                    </div>
+                    <div className="absolute left-0 bottom-4 sm:bottom-6 md:bottom-7 border-4 sm:border-5 border-white bg-logoColor w-24 sm:w-28 md:w-32 h-24 sm:h-28 md:h-32 flex items-center justify-center z-10 text-white px-3 py-2 rounded-full text-sm sm:text-base md:text-lg font-semibold">
+                      ₹13,200,00
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        ))}
+            ))}
       </Slider>
 
       {/* Search Form */}
@@ -173,8 +229,12 @@ const HeroSection = () => {
             {filteredData.map(
               ({ _id, title, propertyType, address, galleryImg }, index) => {
                 const isString = typeof galleryImg[0] === "string";
-                const fileName = isString ? galleryImg[0].split("/").pop() : null;
-                const fileUrl = isString ? `${baseUrl}/uploads/${fileName}` : null;
+                const fileName = isString
+                  ? galleryImg[0].split("/").pop()
+                  : null;
+                const fileUrl = isString
+                  ? `${baseUrl}/uploads/${fileName}`
+                  : null;
                 return (
                   <div
                     onClick={() => {
@@ -183,7 +243,9 @@ const HeroSection = () => {
                     }}
                     key={index}
                     className={`cursor-pointer hover:bg-logoColor hover:text-white rounded-md backdrop-blur-md text-logocbg-logoColor p-2 sm:p-3 flex items-center gap-2 ${
-                      index === selectedIndex ? "bg-logoColor text-white" : "bg-white"
+                      index === selectedIndex
+                        ? "bg-logoColor text-white"
+                        : "bg-white"
                     }`}
                   >
                     <img
@@ -207,8 +269,8 @@ const HeroSection = () => {
         </div>
       )}
 
-       {/* Custom Arrows */}
-       <div className="flex md:block gap-5 z-10 md:static absolute bottom-0 md:bottom-auto right-1/2 md:right-auto translate-x-1/2 md:translate-[auto] justify-center items-center w-full ">
+      {/* Custom Arrows */}
+      <div className="flex md:block gap-5 z-10 md:static absolute bottom-0 md:bottom-auto right-1/2 md:right-auto translate-x-1/2 md:translate-[auto] justify-center items-center w-full ">
         <button
           className="md:absolute md:top-1/2 md:left-20 md:transform md:-translate-y-1/2 bg-black/50 hover:bg-white/40 text-white p-2 sm:p-3 rounded-full md:rounded-none "
           onClick={() => sliderRef.current.slickPrev()}

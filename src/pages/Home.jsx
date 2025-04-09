@@ -5,10 +5,7 @@ import AgentsSection from "../components/home/AgentsSection";
 import Footer from "../components/global/Footer";
 import RealEstateDeals from "../components/home/RealEstateDeals";
 import PopularProperties from "../components/home/PopularProperties";
-import ContactUs from "../components/home/ContactUs";
-import { useState } from "react";
- 
-
+import ContactUs from "../components/home/ContactUs"; 
 const Home = () => {
   return (
     <>
