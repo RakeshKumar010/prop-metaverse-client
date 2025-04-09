@@ -5,8 +5,7 @@ import Swal from "sweetalert2";
 
 const baseUrl = import.meta.env.VITE_APP_URL;
 
-
-const propertyTypes = ["Residential", "Commercial", "Plot or Land"]; // Example property types, adjust as needed
+const propertyTypes = ["Residential", "Commercial", "Plot or Land"];
 
 const HeroForm = ({ action }) => {
   const { pathname } = useLocation();
@@ -17,8 +16,9 @@ const HeroForm = ({ action }) => {
     description: "",
     price: "",
     property_type: "",
-    image_url: "",
+    image: null, // Changed from image_url to image for file handling
   });
+  const [preview, setPreview] = useState(null); // For image preview
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -26,6 +26,17 @@ const HeroForm = ({ action }) => {
       ...prevData,
       [id]: value,
     }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prevData) => ({
+        ...prevData,
+        image: file,
+      }));
+      setPreview(URL.createObjectURL(file)); // Generate preview URL
+    }
   };
 
   const handlePropertyTypeChange = (selectedType) => {
@@ -42,13 +53,20 @@ const HeroForm = ({ action }) => {
       action === "edit" ? `${baseUrl}/edit-hero/${id}` : `${baseUrl}/add-hero`;
     const method = action === "edit" ? "PUT" : "POST";
 
+    // Use FormData to send file and other data
+    const data = new FormData();
+    data.append("title", formData.title);
+    data.append("description", formData.description);
+    data.append("price", formData.price);
+    data.append("property_type", formData.property_type);
+    if (formData.image) {
+      data.append("image", formData.image); // Append the file
+    }
+
     try {
       const response = await fetch(apiUrl, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+        body: data, // Send FormData instead of JSON
       });
 
       if (response.ok) {
@@ -63,8 +81,15 @@ const HeroForm = ({ action }) => {
           },
           buttonsStyling: false,
         }).then(() => {
-          setFormData({ title: "", description: "", price: "", property_type: "", image_url: "" });
-          navigate("/admin/hero"); // Adjust navigation path as needed
+          setFormData({
+            title: "",
+            description: "",
+            price: "",
+            property_type: "",
+            image: null,
+          });
+          setPreview(null);
+          navigate("/admin/hero");
         });
       } else {
         const errorData = await response.json();
@@ -97,7 +122,16 @@ const HeroForm = ({ action }) => {
       const response = await fetch(`${baseUrl}/single-hero/${id}`);
       if (response.ok) {
         const data = await response.json();
-        setFormData(data);
+        setFormData({
+          title: data.title,
+          description: data.description,
+          price: data.price,
+          property_type: data.property_type,
+          image: null, // Reset image for edit, backend will keep old image unless replaced
+        });
+        if (data.image_url) {
+          setPreview(`${baseUrl}/uploads/hero/${data.image_url}`); // Assuming image_url is now the filename
+        }
       } else {
         console.error("Error fetching data");
       }
@@ -119,7 +153,9 @@ const HeroForm = ({ action }) => {
           <div className="space-y-5">
             <div className="grid grid-cols-2 gap-5">
               <div className="flex flex-col gap-2">
-                <label htmlFor="title" className="text-[14px] font-semibold leading-[26px]">Title</label>
+                <label htmlFor="title" className="text-[14px] font-semibold leading-[26px]">
+                  Title
+                </label>
                 <input
                   required
                   type="text"
@@ -131,7 +167,9 @@ const HeroForm = ({ action }) => {
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label htmlFor="price" className="text-[14px] font-semibold leading-[26px]">Price</label>
+                <label htmlFor="price" className="text-[14px] font-semibold leading-[26px]">
+                  Price
+                </label>
                 <input
                   type="text"
                   id="price"
@@ -143,7 +181,9 @@ const HeroForm = ({ action }) => {
               </div>
             </div>
             <div className="flex flex-col gap-2">
-              <label htmlFor="description" className="text-[14px] font-semibold leading-[26px]">Description</label>
+              <label htmlFor="description" className="text-[14px] font-semibold leading-[26px]">
+                Description
+              </label>
               <textarea
                 id="description"
                 value={formData.description}
@@ -153,18 +193,30 @@ const HeroForm = ({ action }) => {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <label htmlFor="image_url" className="text-[14px] font-semibold leading-[26px]">Image URL</label>
+              <label htmlFor="image" className="text-[14px] font-semibold leading-[26px]">
+                Hero Image
+              </label>
               <input
-                type="text"
-                id="image_url"
-                value={formData.image_url}
-                onChange={handleChange}
-                placeholder="Image URL"
+                type="file"
+                id="image"
+                accept="image/*"
+                onChange={handleFileChange}
                 className="border-[1px] px-2 rounded-lg h-14 border-gray-300 text-sm py-3"
               />
+              {preview && (
+                <div className="mt-3">
+                  <img
+                    src={preview}
+                    alt="Hero Preview"
+                    className="w-32 h-32 object-cover rounded-md"
+                  />
+                </div>
+              )}
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-[14px] font-semibold leading-[26px]">Property Type</label>
+              <label className="text-[14px] font-semibold leading-[26px]">
+                Property Type
+              </label>
               <div className="flex gap-5 border-[1px] px-2 rounded-lg h-14 border-gray-300 text-sm py-3 justify-between">
                 {propertyTypes.map((type) => (
                   <label key={type} className="flex items-center gap-2 w-[30%]">
@@ -180,7 +232,10 @@ const HeroForm = ({ action }) => {
             </div>
           </div>
           <div className="flex cursor-pointer justify-center">
-            <button type="submit" className="text-[15px] px-2 md:px-5 py-4 flex mt-7 items-center bg-black rounded-lg text-white">
+            <button
+              type="submit"
+              className="text-[15px] px-2 md:px-5 py-4 flex mt-7 items-center bg-black rounded-lg text-white"
+            >
               {action === "edit" ? "Edit Hero" : "Add Hero"} <GoArrowUpRight className="text-xl" />
             </button>
           </div>

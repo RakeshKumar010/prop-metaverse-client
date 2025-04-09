@@ -195,8 +195,8 @@ const SearchBox = () => {
             {filteredData.map(
               ({ _id, title, propertyType, address, galleryImg, floorPlan }, index) => {
                 const isString = typeof galleryImg[0] === "string";
-                const fileName = isString ? galleryImg[0].split("/").pop() : null;
-                const fileUrl = isString ? `${baseUrl}/uploads/${fileName}` : null;
+                const fileName = isString ? galleryImg[0].split(/[/\\]/).pop() : null;  
+                const fileUrl = isString ? `${baseUrl}/uploads/property/${fileName}` : null;
                 return (
                   <div
                     onClick={() => {

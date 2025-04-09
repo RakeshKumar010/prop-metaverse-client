@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { RiDeleteBin2Fill } from "react-icons/ri";
-import { useNavigate } from "react-router-dom";
+import { RiDeleteBin2Fill } from "react-icons/ri"; 
 import Swal from "sweetalert2";
 import * as XLSX from "xlsx";
 import PropertyRow from "./PropertyRow";
@@ -53,6 +52,8 @@ const PropertyTable = ({ searchValue }) => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
+          console.log(selectedIds);
+          
           const response = await fetch(baseUrl + "/select-property-delete", {
             method: "DELETE",
             headers: {

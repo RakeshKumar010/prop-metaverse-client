@@ -37,6 +37,8 @@ const Media = ({ setIsActive }) => {
         console.log("Updated galleryImg:", newGalleryImgs); // Debug log
         return { ...prevData, galleryImg: newGalleryImgs };
       });
+     
+      
     },
     [setFormData]
   );
@@ -86,10 +88,10 @@ const Media = ({ setIsActive }) => {
             // Check if item is a string (from DB) or object (from file input)
             const isString = typeof item === "string";
             const isObject = typeof item === "object" && item !== null;
-
+            
             // Extract filename if string
-            const fileName = isString ? item.split("/").pop() : null;
-            const fileUrl = isString ? `${baseUrl}/uploads/${fileName}` : null;
+            const fileName = isString ? item.split(/[/\\]/).pop() : null; 
+            const fileUrl = isString ? `${baseUrl}/uploads/property/${fileName}` : null;
 
             return (
               <div

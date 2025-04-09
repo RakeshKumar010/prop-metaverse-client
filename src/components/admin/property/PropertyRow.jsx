@@ -62,12 +62,14 @@ const PropertyRow = ({
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
+            console.log(value._id);
+            
             const response = await fetch(baseUrl + "/select-property-delete", {
               method: "DELETE",
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({ ids: value._id }),
+              body: JSON.stringify({ ids: [value._id] }),
             });
 
             if (response.ok) {
