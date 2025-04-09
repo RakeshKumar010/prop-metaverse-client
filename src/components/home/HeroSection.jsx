@@ -5,6 +5,7 @@ import Herobg from "../../assets/image/herobg.jpg";
 import SliderImg1 from "../../assets/image/herosecimg.jpeg";
 import { MyContext } from "../../App";
 import SearchBox from "./SearchBox";
+const baseUrl = import.meta.env.VITE_APP_URL;
 
 const HeroSection = () => {
   const { setDamacIsPopUpOpen } = useContext(MyContext);
@@ -26,7 +27,7 @@ const HeroSection = () => {
   useEffect(() => {
     const fetchHeroData = async () => {
       try {
-        const response = await fetch("https://server.propmetaverse.com/hero");
+        const response = await fetch(`${baseUrl}/hero`);
         const data = await response.json();
         setHeroData(Array.isArray(data) ? data : [data]);
       } catch (error) {
@@ -71,21 +72,25 @@ const HeroSection = () => {
                     </div>
                   </div>
 
-                  <div className="w-52 h-52 sm:w-72 md:w-80 lg:w-96  sm:h-72 md:h-80 lg:h-96 relative shadow-[0_0_20px] shadow-white/80 rounded-full">
-                    <div className="relative rounded-full overflow-hidden">
+                  <div className="w-52 h-52 sm:w-72 md:w-80 lg:w-96 sm:h-72 md:h-80 lg:h-96 relative rounded-full shadow-[0_0_20px] shadow-white/80">
+                    {/* Circular Image */}
+                    <div className="relative rounded-full overflow-hidden w-full h-full">
                       <img
-                        src={item.image_url}
+                        src={`${baseUrl}/uploads/hero/${item.image_url}`}
                         alt={item.title}
-                        className="w-full h-full object-cover rounded-full border-4 sm:border-5 border-white shadow-lg"
+                        className="w-full h-full object-cover border-4 sm:border-5 border-white shadow-lg rounded-full"
                       />
-                      <div className="text-end text-xs sm:text-sm md:text-base lg:text-lg mt-2 sm:mt-3 absolute bottom-12 sm:bottom-14 md:bottom-16 left-0 right-0 md:pr-24 pr-6 bg-white font-bold text-gray-400 p-2 sm:p-3 md:p-4">
+
+                      {/* Property Type Text Inside Circle */}
+                      <div className="absolute bottom-10 sm:bottom-14 md:bottom-16 left-0 right-0 px-3 sm:px-4 text-center text-xs sm:text-sm md:text-base lg:text-lg font-bold text-gray-400 bg-white bg-opacity-80 py-2">
                         {item.property_type.toUpperCase()}
                       </div>
                     </div>
-                    <div className="absolute   left-0 bottom-4 sm:bottom-6 md:bottom-7 border-4 sm:border-5 border-white bg-logoColor w-24 sm:w-28 md:w-32 h-24 sm:h-28 md:h-32 flex items-center justify-center z-10 text-white px-3 py-2 rounded-full text-sm sm:text-base md:text-lg font-semibold">
-                      <div className="flex gap-1">
-                        <span>₹ </span>
-                        {item.price}
+
+                    {/* Price Badge Overlapping Bottom Left */}
+                    <div className="absolute -bottom-5 -left-5 sm:bottom-5 sm:-left-0 border-4 sm:border-5 border-white bg-logoColor w-20 sm:w-24 md:w-32 h-20 sm:h-24 md:h-32 flex items-center justify-center z-10 text-white px-3 py-2 rounded-full text-xs sm:text-sm md:text-base font-semibold shadow-md">
+                      <div className="flex flex-col   items-center justify-center leading-tight text-center">
+                        <span>₹ {item.price.replace(/^₹\s?/, '')}</span>
                       </div>
                     </div>
                   </div>
