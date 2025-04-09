@@ -14,6 +14,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../../assets/logopng.png";
 import { useLocation } from "react-router-dom";
 import { BsBuildingAdd } from "react-icons/bs";
+
 const baseUrl = import.meta.env.VITE_APP_URL;
 
 const Sidebar = () => {
@@ -21,7 +22,7 @@ const Sidebar = () => {
   const lastEndpoint = location.pathname.split("/").pop();
   const navigate = useNavigate();
   const [isAdminNav, setIsAdminNav] = useState(false);
-  const [user, setUser] = useState("");
+  const [user, setUser] = useState(null); // Changed to null for better initial state
   const [openDropdown, setOpenDropdown] = useState(null);
 
   const sections = [
@@ -34,36 +35,22 @@ const Sidebar = () => {
               icon: <MdOutlineMarkUnreadChatAlt />,
               label: "Enquiries",
               nested: [
-                {
-                  label: "Women’s EPM",
-                  link: "/we-enquiry",
-                },
-                {
-                  label: "DAMAC Property",
-                  link: "/damac-enquiry",
-                },
+                { label: "Women’s EPM", link: "/we-enquiry" },
+                { label: "DAMAC Property", link: "/damac-enquiry" },
               ],
             }
           : null,
         user?.userType === "Admin"
-          ? {
-              icon: <MdOutlineAdminPanelSettings />,
-              label: "Users",
-              link: "/user",
-            }
+          ? { icon: <MdOutlineAdminPanelSettings />, label: "Users", link: "/user" }
           : null,
         user?.userType === "Admin"
-          ? {
-              icon: <MdContentCopy />,
-              label: "Heros",
-              link: "/hero",
-            }
+          ? { icon: <MdContentCopy />, label: "Heros", link: "/hero" }
           : null,
-          { icon: <LuBuilding2 />, label: "Property", link: "/property" },
+        { icon: <LuBuilding2 />, label: "Property", link: "/property" },
       ].filter(Boolean),
     },
     {
-      title: "Opratations",
+      title: "Operations",
       items: [
         user?.userType === "Admin"
           ? { icon: <LuUserRoundPlus />, label: "Add User", link: "/add-user" }
@@ -80,25 +67,40 @@ const Sidebar = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const user = JSON.parse(localStorage.getItem("user"));
-        if (!user || !user._id) return alert("User not found in localStorage.");
-        const response = await fetch(`${baseUrl}/single-user/${user._id}`);
+        const storedUser = JSON.parse(localStorage.getItem("user"));
+        if (!storedUser || !storedUser._id) {
+          navigate("/"); // Redirect to login if no user in localStorage
+          return;
+        }
+
+        const response = await fetch(`${baseUrl}/single-user/${storedUser._id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
         if (response.ok) {
           const result = await response.json();
           setUser(result);
 
-          if (result.password !== user.password) {
+          // Verify user data consistency (excluding password)
+          if (result._id !== storedUser._id || result.userType !== storedUser.userType) {
             localStorage.removeItem("user");
             navigate("/");
           }
         } else {
-          alert("Failed to fetch user data.");
+          console.error("Failed to fetch user data:", response.status);
+          localStorage.removeItem("user");
+          navigate("/");
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
-        alert("An error occurred. Please try again.");
+        localStorage.removeItem("user");
+        navigate("/");
       }
     };
+
     fetchUserData();
   }, [navigate]);
 
@@ -107,9 +109,7 @@ const Sidebar = () => {
 
     if (
       user.userType === "Sales" &&
-      ["/user", "/add-user", "/we-enquiry", "/damac-enquiry"].includes(
-        `/${lastEndpoint}`
-      )
+      ["/user", "/add-user", "/we-enquiry", "/damac-enquiry"].includes(`/${lastEndpoint}`)
     ) {
       navigate("/admin");
     }
@@ -121,6 +121,11 @@ const Sidebar = () => {
       navigate("/admin");
     }
   }, [lastEndpoint, user, navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    navigate("/");
+  };
 
   return (
     <>
@@ -137,15 +142,10 @@ const Sidebar = () => {
                       <div key={idx}>
                         <button
                           onClick={() =>
-                            setOpenDropdown(
-                              openDropdown === item.label ? null : item.label
-                            )
+                            setOpenDropdown(openDropdown === item.label ? null : item.label)
                           }
                           className={`flex items-center w-full py-4 px-6 rounded-lg font-medium hover:bg-black hover:text-white transition duration-500 gap-3 ${
-                            item.nested.some(
-                              (nest) =>
-                                location.pathname === `/admin${nest.link}`
-                            )
+                            item.nested.some((nest) => location.pathname === `/admin${nest.link}`)
                               ? "bg-black text-white"
                               : ""
                           }`}
@@ -160,8 +160,7 @@ const Sidebar = () => {
                                 key={nestedIdx}
                                 to={`/admin${nestedItem.link}`}
                                 className={`flex items-center py-3 mt-1 px-6 rounded-lg font-medium hover:bg-black hover:text-white transition duration-500 ${
-                                  location.pathname ===
-                                  `/admin${nestedItem.link}`
+                                  location.pathname === `/admin${nestedItem.link}`
                                     ? "bg-black text-white"
                                     : ""
                                 }`}
@@ -179,9 +178,7 @@ const Sidebar = () => {
                       to={`/admin${item.link}`}
                       key={idx}
                       className={`flex items-center py-4 px-6 rounded-lg font-medium hover:bg-black hover:text-white transition duration-500 gap-3 ${
-                        location.pathname === `/admin${item.link}`
-                          ? "bg-black text-white"
-                          : ""
+                        location.pathname === `/admin${item.link}` ? "bg-black text-white" : ""
                       }`}
                     >
                       {item.icon}
@@ -191,10 +188,7 @@ const Sidebar = () => {
                 })}
                 {index === sections.length - 1 && (
                   <button
-                    onClick={() => {
-                      localStorage.removeItem("user");
-                      navigate("/");
-                    }}
+                    onClick={handleLogout}
                     className="flex items-center py-4 px-6 rounded-lg font-medium hover:bg-black hover:text-white transition duration-500 gap-3"
                   >
                     <RiLogoutCircleLine /> Logout
@@ -226,15 +220,10 @@ const Sidebar = () => {
                         <div key={idx}>
                           <button
                             onClick={() =>
-                              setOpenDropdown(
-                                openDropdown === item.label ? null : item.label
-                              )
+                              setOpenDropdown(openDropdown === item.label ? null : item.label)
                             }
                             className={`flex items-center w-full py-4 px-6 rounded-lg hover:bg-black hover:text-white transition duration-500 gap-3 ${
-                              item.nested.some(
-                                (nest) =>
-                                  location.pathname === `/admin${nest.link}`
-                              )
+                              item.nested.some((nest) => location.pathname === `/admin${nest.link}`)
                                 ? "bg-black text-white"
                                 : ""
                             }`}
@@ -243,14 +232,13 @@ const Sidebar = () => {
                             <span>{item.label}</span>
                           </button>
                           {openDropdown === item.label && (
-                            <div className="pl-10 space-y-1 ">
+                            <div className="pl-10 space-y-1">
                               {item.nested.map((nestedItem, nestedIdx) => (
                                 <Link
                                   key={nestedIdx}
                                   to={`/admin${nestedItem.link}`}
                                   className={`flex items-center py-3 px-6 rounded-lg hover:bg-black hover:text-white transition duration-500 ${
-                                    location.pathname ===
-                                    `/admin${nestedItem.link}`
+                                    location.pathname === `/admin${nestedItem.link}`
                                       ? "bg-black text-white"
                                       : ""
                                   }`}
@@ -282,10 +270,7 @@ const Sidebar = () => {
                   })}
                   {index === sections.length - 1 && (
                     <button
-                      onClick={() => {
-                        localStorage.removeItem("user");
-                        navigate("/");
-                      }}
+                      onClick={handleLogout}
                       className="flex w-full items-center py-4 px-6 rounded-lg hover:bg-black hover:text-white transition duration-500 gap-3"
                     >
                       <RiLogoutCircleLine /> Logout
