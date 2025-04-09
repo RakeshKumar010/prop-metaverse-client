@@ -1,0 +1,238 @@
+import { RiHome6Line } from "react-icons/ri";
+import { IoSearchOutline } from "react-icons/io5";
+import { FaFilter } from "react-icons/fa"; // Added filter icon
+import { useNavigate } from "react-router-dom";
+import { useContext, useState, useEffect, useRef } from "react";
+import { MyContext } from "../../App";
+const baseUrl = import.meta.env.VITE_APP_URL;
+
+const SearchBox = () => {
+  const [isHideSearch, setIsHideSearch] = useState(false);
+  const [search, setSearch] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [propertyType, setPropertyType] = useState("");
+  const [status, setStatus] = useState("");
+  const [bhkType, setBhkType] = useState("");
+  const [showFilters, setShowFilters] = useState(false); // New state for filter visibility
+  const navigate = useNavigate();
+  const { propertyData } = useContext(MyContext);
+  const [filteredData, setFilteredData] = useState([]);
+  const dropdownRef = useRef(null);
+  const filterRef = useRef(null); // Ref for filter dropdown
+
+  // Existing useEffect for filtering
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      if (search || propertyType || status || bhkType) {
+        setIsHideSearch(true);
+        const results = propertyData.filter((item) => {
+          const matchesSearch = search
+            ? ["title", "description", "address", "city", "state", "country"].some(
+                (key) => item[key]?.toLowerCase().includes(search.toLowerCase())
+              )
+            : true;
+          const matchesType = propertyType
+            ? item.propertyType === propertyType
+            : true;
+          const matchesStatus = status ? item.status === status : true;
+          const matchesBhk = bhkType
+            ? bhkType === "Any" || item.floorPlan.some(plan => plan.type === bhkType)
+            : true;
+
+          return matchesSearch && matchesType && matchesStatus && matchesBhk;
+        });
+        setFilteredData(results);
+        setSelectedIndex(results.length > 0 ? 0 : -1);
+      } else {
+        setFilteredData([]);
+        setSelectedIndex(-1);
+        setIsHideSearch(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+  }, [search, propertyType, status, bhkType, propertyData]);
+
+  // Modified useEffect for handling outside clicks (including filter dropdown)
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        (dropdownRef.current && !dropdownRef.current.contains(event.target)) &&
+        (filterRef.current && !filterRef.current.contains(event.target))
+      ) {
+        setIsHideSearch(false);
+        setShowFilters(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (selectedIndex >= 0 && filteredData[selectedIndex]) {
+      const { title, developer, fullAddress, _id } = filteredData[selectedIndex];
+      navigate(
+        ("/" + title.replace(/\s+/g, "-")).toLowerCase() +
+          "-by-" +
+          developer.replace(/\s+/g, "-") +
+          "-" +
+          fullAddress.replace(/\s+/g, "-") +
+          "/" +
+          _id
+      );
+    } else {
+      alert("Please select a property from the list.");
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (filteredData.length > 0) {
+      if (e.key === "ArrowDown") {
+        setSelectedIndex((prevIndex) =>
+          prevIndex < filteredData.length - 1 ? prevIndex + 1 : 0
+        );
+      } else if (e.key === "ArrowUp") {
+        setSelectedIndex((prevIndex) =>
+          prevIndex > 0 ? prevIndex - 1 : filteredData.length - 1
+        );
+      } else if (e.key === "Enter") {
+        handleSearchSubmit(e);
+      }
+    }
+  };
+
+  return (
+    <div className="relative w-full max-w-6xl mx-auto">
+      <form
+        onSubmit={handleSearchSubmit}
+        className="flex relative top-8 sm:top-12 md:top-16 z-20 w-full flex-col sm:flex-row gap-4 p-4 bg-white shadow-xl rounded-xl border border-gray-100 transform transition-all duration-300 hover:shadow-2xl"
+      >
+        <div className="flex items-center gap-2 w-full">
+          <div className="relative flex items-center gap-2 p-3 bg-gray-50 rounded-lg w-full transition-all duration-200 focus-within:ring-2 focus-within:ring-logoColor/50">
+            <RiHome6Line className="text-xl text-gray-600" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={handleKeyDown}
+              type="text"
+              placeholder="Enter an address, neighborhood, city, or ZIP code"
+              className="w-full bg-transparent outline-none text-gray-700 placeholder-gray-400 text-sm md:text-base"
+            />
+          </div>
+          {/* Filter Button for Mobile */}
+          <button
+            type="button"
+            onClick={() => setShowFilters(!showFilters)}
+            className="sm:hidden ml-2 p-3 bg-gray-50 rounded-lg text-gray-600 hover:bg-gray-100 transition-all duration-200"
+          >
+            <FaFilter className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Filters - Hidden on mobile by default, shown on sm+ */}
+        <div
+          ref={filterRef}
+          className={`${
+            showFilters ? "flex" : "hidden"
+          } sm:flex flex-col sm:flex-row gap-4 w-full ${showFilters ? "animate-in fade-in duration-200" : ""}`}
+        >
+          <select
+            value={propertyType}
+            onChange={(e) => setPropertyType(e.target.value)}
+            className="p-3 bg-gray-50 rounded-lg w-full text-gray-700 text-sm md:text-base border border-gray-200 focus:ring-2 focus:ring-logoColor/50 focus:outline-none transition-all duration-200"
+          >
+            <option value="">Property Type</option>
+            <option value="Residential">Residential</option>
+            <option value="Commercial">Commercial</option>
+            <option value="Plot or Land">Plot or Land</option>
+          </select>
+
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            className="p-3 bg-gray-50 rounded-lg w-full text-gray-700 text-sm md:text-base border border-gray-200 focus:ring-2 focus:ring-logoColor/50 focus:outline-none transition-all duration-200"
+          >
+            <option value="">Status</option>
+            <option value="Available">Available</option>
+            <option value="Sold">Sold</option>
+            <option value="Rented">Rented</option>
+            <option value="Under Construction">Under Construction</option>
+          </select>
+
+          <select
+            value={bhkType}
+            onChange={(e) => setBhkType(e.target.value)}
+            className="p-3 bg-gray-50 rounded-lg w-full text-gray-700 text-sm md:text-base border border-gray-200 focus:ring-2 focus:ring-logoColor/50 focus:outline-none transition-all duration-200"
+          >
+            <option value="">Configuration</option>
+            <option value="Any">Any</option>
+            <option value="1 BHK">1 BHK</option>
+            <option value="2 BHK">2 BHK</option>
+            <option value="3 BHK">3 BHK</option>
+            <option value="4 BHK">4 BHK</option>
+            <option value="5 BHK">5 BHK</option>
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          className="group flex items-center justify-center w-full sm:w-auto bg-logoColor hover:bg-logoColor/90 text-white p-3 rounded-lg transition-all duration-200 transform hover:scale-105"
+        >
+          <IoSearchOutline className="h-6 w-6 group-hover:scale-110 transition-transform duration-200" />
+        </button>
+      </form>
+
+      {isHideSearch && filteredData.length > 0 && (
+        <div 
+          ref={dropdownRef}
+          className="relative top-10 sm:top-14 md:top-20 animate-in fade-in duration-300"
+        >
+          <div className="absolute w-full bg-white shadow-lg rounded-xl border border-gray-100 max-h-[300px] overflow-y-auto z-10">
+            {filteredData.map(
+              ({ _id, title, propertyType, address, galleryImg, floorPlan }, index) => {
+                const isString = typeof galleryImg[0] === "string";
+                const fileName = isString ? galleryImg[0].split("/").pop() : null;
+                const fileUrl = isString ? `${baseUrl}/uploads/${fileName}` : null;
+                return (
+                  <div
+                    onClick={() => {
+                      alert("Work in Progress");
+                      setIsHideSearch(false);
+                    }}
+                    key={index}
+                    className={`flex items-center gap-3 p-3 cursor-pointer transition-all duration-200 hover:bg-green-50 ${
+                      index === selectedIndex ? "bg-green-100" : ""
+                    } ${index === 0 ? "rounded-t-xl" : ""} ${
+                      index === filteredData.length - 1 ? "rounded-b-xl" : ""
+                    }`}
+                  >
+                    <img
+                      src={fileUrl}
+                      alt={title}
+                      className="rounded-lg w-12 h-12 object-cover border border-gray-200"
+                    />
+                    <div className="flex-1">
+                      <p className="text-sm md:text-base font-semibold text-gray-800">
+                        {title} 
+                        <span className="text-gray-500"> ({propertyType})</span>
+                      </p>
+                      <p className="text-xs md:text-sm text-gray-600 line-clamp-1">
+                        {address} - {floorPlan.map(plan => plan.type).join(", ")}
+                      </p>
+                    </div>
+                  </div>
+                );
+              }
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default SearchBox;

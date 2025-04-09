@@ -4,23 +4,15 @@ import { useContext, useEffect, useRef, useState } from "react";
 import Herobg from "../../assets/image/herobg.jpg";
 import SliderImg1 from "../../assets/image/herosecimg.jpeg";
 import { MyContext } from "../../App";
-import { RiHome6Line } from "react-icons/ri";
-import { IoSearchOutline } from "react-icons/io5";
-import { useNavigate } from "react-router-dom";
-const baseUrl = import.meta.env.VITE_APP_URL;
+import SearchBox from "./SearchBox";
 
 const HeroSection = () => {
-  const [isHideSearch, setIsHideSearch] = useState(false);
-  const [search, setSearch] = useState("");
-  const { propertyData, setDamacIsPopUpOpen } = useContext(MyContext);
-  const [filteredData, setFilteredData] = useState([]);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const { setDamacIsPopUpOpen } = useContext(MyContext);
   const [heroData, setHeroData] = useState([]);
-  const navigate = useNavigate();
   const sliderRef = useRef(null);
 
   const settings = {
-    dots: true,
+    dots: false,
     infinite: true,
     speed: 500,
     slidesToShow: 1,
@@ -45,61 +37,6 @@ const HeroSection = () => {
 
     fetchHeroData();
   }, []);
-
-  useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      if (search) {
-        setIsHideSearch(true);
-        const results = propertyData.filter((item) =>
-          ["title", "description", "address", "city", "state", "country"].some(
-            (key) => item[key]?.toLowerCase().includes(search.toLowerCase())
-          )
-        );
-        setFilteredData(results);
-        setSelectedIndex(results.length > 0 ? 0 : -1);
-      } else {
-        setFilteredData([]);
-        setSelectedIndex(-1);
-      }
-    }, 300);
-
-    return () => clearTimeout(delayDebounce);
-  }, [search, propertyData]);
-
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    if (selectedIndex >= 0 && filteredData[selectedIndex]) {
-      const { title, developer, fullAddress, _id } =
-        filteredData[selectedIndex];
-      navigate(
-        ("/" + title.replace(/\s+/g, "-")).toLowerCase() +
-          "-by-" +
-          developer.replace(/\s+/g, "-") +
-          "-" +
-          fullAddress.replace(/\s+/g, "-") +
-          "/" +
-          _id
-      );
-    } else {
-      alert("Please select a property from the list.");
-    }
-  };
-
-  const handleKeyDown = (e) => {
-    if (filteredData.length > 0) {
-      if (e.key === "ArrowDown") {
-        setSelectedIndex((prevIndex) =>
-          prevIndex < filteredData.length - 1 ? prevIndex + 1 : 0
-        );
-      } else if (e.key === "ArrowUp") {
-        setSelectedIndex((prevIndex) =>
-          prevIndex > 0 ? prevIndex - 1 : filteredData.length - 1
-        );
-      } else if (e.key === "Enter") {
-        handleSearchSubmit(e);
-      }
-    }
-  };
 
   return (
     <div
@@ -134,7 +71,7 @@ const HeroSection = () => {
                     </div>
                   </div>
 
-                  <div className="w-60 sm:w-72 md:w-80 lg:w-96 h-60 sm:h-72 md:h-80 lg:h-96 relative shadow-[0_0_20px] shadow-white/80 rounded-full">
+                  <div className="w-52 h-52 sm:w-72 md:w-80 lg:w-96  sm:h-72 md:h-80 lg:h-96 relative shadow-[0_0_20px] shadow-white/80 rounded-full">
                     <div className="relative rounded-full overflow-hidden">
                       <img
                         src={item.image_url}
@@ -145,8 +82,11 @@ const HeroSection = () => {
                         {item.property_type.toUpperCase()}
                       </div>
                     </div>
-                    <div className="absolute left-0 bottom-4 sm:bottom-6 md:bottom-7 border-4 sm:border-5 border-white bg-logoColor w-24 sm:w-28 md:w-32 h-24 sm:h-28 md:h-32 flex items-center justify-center z-10 text-white px-3 py-2 rounded-full text-sm sm:text-base md:text-lg font-semibold">
-                      {item.price}
+                    <div className="absolute   left-0 bottom-4 sm:bottom-6 md:bottom-7 border-4 sm:border-5 border-white bg-logoColor w-24 sm:w-28 md:w-32 h-24 sm:h-28 md:h-32 flex items-center justify-center z-10 text-white px-3 py-2 rounded-full text-sm sm:text-base md:text-lg font-semibold">
+                      <div className="flex gap-1">
+                        <span>₹ </span>
+                        {item.price}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -198,91 +138,26 @@ const HeroSection = () => {
             ))}
       </Slider>
 
-      {/* Search Form */}
-      <form
-        onSubmit={handleSearchSubmit}
-        className="flex relative top-8 sm:top-12 md:top-16 z-10 w-full flex-col sm:flex-row gap-4 sm:gap-8 items-center bg-logoColor text-black p-2 rounded-lg"
-      >
-        <div className="flex items-center gap-2 p-3 sm:p-4 bg-gray-50 rounded-md w-full">
-          <RiHome6Line className="text-base sm:text-lg" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={handleKeyDown}
-            type="text"
-            placeholder="Enter an address, neighborhood, city, or ZIP code"
-            className="w-full bg-transparent outline-none text-sm sm:text-base"
-          />
-        </div>
-        <div
-          onClick={handleSearchSubmit}
-          className="flex items-center justify-center sm:justify-start gap-3 sm:gap-5"
-        >
-          <IoSearchOutline className="bg-white text-logoColor h-8 w-8 sm:h-10 sm:w-10 rounded-full p-2 sm:p-3 cursor-pointer" />
-        </div>
-      </form>
-
-      {/* Search Results */}
-      {isHideSearch && filteredData.length > 0 && (
-        <div className="relative top-10 sm:top-14 md:top-[65px]">
-          <div className="absolute bg-logoColor/10 backdrop-blur-md p-3 flex flex-col gap-3 w-full border max-h-[300px] overflow-y-auto">
-            {filteredData.map(
-              ({ _id, title, propertyType, address, galleryImg }, index) => {
-                const isString = typeof galleryImg[0] === "string";
-                const fileName = isString
-                  ? galleryImg[0].split("/").pop()
-                  : null;
-                const fileUrl = isString
-                  ? `${baseUrl}/uploads/${fileName}`
-                  : null;
-                return (
-                  <div
-                    onClick={() => {
-                      alert("Work in Progress");
-                      setIsHideSearch(false);
-                    }}
-                    key={index}
-                    className={`cursor-pointer hover:bg-logoColor hover:text-white rounded-md backdrop-blur-md text-logocbg-logoColor p-2 sm:p-3 flex items-center gap-2 ${
-                      index === selectedIndex
-                        ? "bg-logoColor text-white"
-                        : "bg-white"
-                    }`}
-                  >
-                    <img
-                      src={fileUrl}
-                      alt={title}
-                      className="rounded-full w-8 h-8 sm:w-10 sm:h-10 object-cover"
-                    />
-                    <div className="p-1 sm:p-2">
-                      <p className="text-sm sm:text-[15px] font-semibold leading-tight sm:leading-[22.5px]">
-                        {title} ({propertyType})
-                      </p>
-                      <p className="text-xs sm:text-sm leading-tight sm:leading-[20px]">
-                        {address}
-                      </p>
-                    </div>
-                  </div>
-                );
-              }
-            )}
-          </div>
-        </div>
-      )}
-
       {/* Custom Arrows */}
-      <div className="flex md:block gap-5 z-10 md:static absolute bottom-0 md:bottom-auto right-1/2 md:right-auto translate-x-1/2 md:translate-[auto] justify-center items-center w-full ">
-        <button
-          className="md:absolute md:top-1/2 md:left-20 md:transform md:-translate-y-1/2 bg-black/50 hover:bg-white/40 text-white p-2 sm:p-3 rounded-full md:rounded-none "
-          onClick={() => sliderRef.current.slickPrev()}
-        >
-          <FaChevronLeft size={20} sm:size={24} />
-        </button>
-        <button
-          className="md:absolute md:top-1/2 md:right-20 md:transform md:-translate-y-1/2 bg-black/50 hover:bg-white/40 text-white p-2 sm:p-3 rounded-full md:rounded-none "
-          onClick={() => sliderRef.current.slickNext()}
-        >
-          <FaChevronRight size={20} sm:size={24} />
-        </button>
+      <div className="md:block flex flex-col items-center  ">
+        {/* <div className="flex md:block gap-5 z-10 md:static absolute bottom-0 md:bottom-auto right-1/2 md:right-auto translate-x-1/2 md:translate-[auto] justify-center items-center w-full "> */}
+        <div className="relative md:static">
+          <button
+            className="md:absolute md:top-1/2 md:left-20 md:transform md:-translate-y-1/2 bg-black/50 hover:bg-white/40 text-white p-2 sm:p-3 rounded-full md:rounded-none "
+            onClick={() => sliderRef.current.slickPrev()}
+          >
+            <FaChevronLeft size={20} sm:size={24} />
+          </button>
+          <button
+            className="md:absolute md:top-1/2 md:right-20 md:transform md:-translate-y-1/2 bg-black/50 hover:bg-white/40 text-white p-2 sm:p-3 rounded-full md:rounded-none "
+            onClick={() => sliderRef.current.slickNext()}
+          >
+            <FaChevronRight size={20} sm:size={24} />
+          </button>
+        </div>
+
+        {/* Search Form */}
+        <SearchBox />
       </div>
     </div>
   );

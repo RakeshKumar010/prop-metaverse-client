@@ -18,7 +18,8 @@ import DamacPopUp from "./DamacPopUp";
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { isPopUpOpen, setIsPopUpOpen,damacIsPopUpOpen,setDamacIsPopUpOpen } = useContext(MyContext);
+  const { isPopUpOpen, setIsPopUpOpen, damacIsPopUpOpen, setDamacIsPopUpOpen } =
+    useContext(MyContext);
 
   useEffect(() => {
     setTimeout(() => {
