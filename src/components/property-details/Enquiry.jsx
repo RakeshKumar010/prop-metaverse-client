@@ -77,7 +77,7 @@ const Enquiry = () => {
   };
 
   return (
-    <div className="rounded bg-white p-6 py-5 shadow-[0_10px_40px_rgba(24,26,32,.05)] w-full h-fit sticky top-[150px]  ">
+    <div className="rounded bg-logoBlue/5 shadow-[0_10px_40px_rgba(24,26,32,.05)] p-6 py-5  w-full h-fit sticky top-[150px]  ">
       <h3 className="text-[20px] font-semibold leading-[30px]">
         Contact Agency
       </h3>

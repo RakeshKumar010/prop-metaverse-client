@@ -6,11 +6,11 @@ const Gallery = ({ galleryImg }) => {
       {galleryImg.length > 2 ? (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Left Image */}
-          <div className="overflow-hidden md:col-span-1">
+          <div className="overflow-hidden hidden md:block md:col-span-1">
             <img
               src={baseUrl + '/uploads/property/' + galleryImg[0]}
               alt="Lobby"
-              className="w-full h-[600px] object-cover "
+              className="w-full h-[500px] md:h-[600px] object-cover "
             />
           </div>
 
@@ -19,16 +19,16 @@ const Gallery = ({ galleryImg }) => {
             <img
               src={baseUrl + '/uploads/property/' + galleryImg[1]}
               alt="Tower"
-              className="w-full h-[600px] object-cover "
+              className="w-full h-[500px] md:h-[600px] object-cover "
             />
           </div>
 
           {/* Right Image */}
-          <div className="overflow-hidden md:col-span-1">
+          <div className="overflow-hidden hidden md:block md:col-span-1">
             <img
               src={baseUrl + '/uploads/property/' + galleryImg[2]}
               alt="Bedroom"
-              className="w-full h-[600px] object-cover "
+              className="w-full h-[500px] md:h-[600px] object-cover "
             />
           </div>
         </div>

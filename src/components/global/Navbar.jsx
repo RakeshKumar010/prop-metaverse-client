@@ -15,7 +15,7 @@ import { MyContext } from "../../App";
 import Popup from "./Popup";
 import DamacPopUp from "./DamacPopUp";
 
-const Navbar = ({isGlass}) => {
+const Navbar = ({ isGlass }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { isPopUpOpen, setIsPopUpOpen, damacIsPopUpOpen, setDamacIsPopUpOpen } =
@@ -50,11 +50,13 @@ const Navbar = ({isGlass}) => {
       <header
         className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ease-in-out 
       ${
-        scrolled || !isGlass ? "bg-[#061a33] shadow-lg" : "bg-transparent backdrop-blur-xl"
+        scrolled || !isGlass
+          ? "bg-[#061a33] shadow-lg"
+          : "bg-transparent backdrop-blur-xl"
       } text-white `}
       >
         {/* Top Bar */}
-        <div className="hidden md:flex justify-between items-center px-40 text-sm border-b border-gray-600">
+        <div className="hidden md:flex justify-between items-center px-3 md:px-10 lg:px-20 xl:px-28 2xl:px-40 text-sm border-b border-gray-600">
           <div className="flex items-center space-x-4 py-1">
             <span className="flex items-center space-x-1">
               <FaPhoneAlt />
@@ -87,7 +89,7 @@ const Navbar = ({isGlass}) => {
         </div>
 
         {/* Main Navbar */}
-        <nav className="flex justify-between items-center px-6 md:px-10 lg:px-40 py-4">
+        <nav className="flex justify-between items-center px-3 md:px-10 lg:px-20 xl:px-28 2xl:px-40 py-4">
           {/* Logo */}
 
           <img src={Logo} alt="logo" className="w-32 md:w-40" />
@@ -133,7 +135,7 @@ const Navbar = ({isGlass}) => {
               </Link>
             </li>
             <li>
-              <Link to="/" className="hover:text-logoColor">
+              <Link to="/contactus" className="hover:text-logoColor">
                 Contact
               </Link>
             </li>
@@ -145,8 +147,8 @@ const Navbar = ({isGlass}) => {
           </ul>
         </nav>
       </header>
-      {/* {isPopUpOpen ? <Popup /> : null}
-      {damacIsPopUpOpen ? <DamacPopUp /> : null} */}
+      {isPopUpOpen ? <Popup /> : null}
+      {damacIsPopUpOpen ? <DamacPopUp /> : null}
     </>
   );
 };

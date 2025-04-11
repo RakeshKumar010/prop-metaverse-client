@@ -17,6 +17,7 @@ import Hero from "../components/admin/pages/Hero";
 import AddHero from "../components/admin/pages/AddHero";
 import Projects from "../pages/Projects";
 import PropertyDetailsPage from "../pages/PropertyDetailsPage";
+import Contact from "../pages/Contact";
 
 const Layout = () => {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -33,6 +34,7 @@ const Layout = () => {
         <Route path="/" element={<Home />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/projects/:title/:id" element={<PropertyDetailsPage />} />
+        <Route path="/contactus" element={<Contact />} />
 
         {/* admin  */}
         <Route

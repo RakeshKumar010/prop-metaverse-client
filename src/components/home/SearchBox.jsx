@@ -84,17 +84,8 @@ const SearchBox = () => {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (selectedIndex >= 0 && filteredData[selectedIndex]) {
-      const { title, developer, fullAddress, _id } =
-        filteredData[selectedIndex];
-      navigate(
-        ("/" + title.replace(/\s+/g, "-")).toLowerCase() +
-          "-by-" +
-          developer.replace(/\s+/g, "-") +
-          "-" +
-          fullAddress.replace(/\s+/g, "-") +
-          "/" +
-          _id
-      );
+      const { title, _id } = filteredData[selectedIndex];
+      navigate(`/projects/${title.replaceAll(" ", "-")}/${_id}`);
     } else {
       alert("Please select a property from the list.");
     }
@@ -207,11 +198,12 @@ const SearchBox = () => {
         </div>
 
         <button
-          type="submit"
-          className="group flex items-center justify-center w-full sm:w-auto bg-logoColor hover:bg-logoColor/90 text-white p-3 rounded-lg transition-all duration-200 transform hover:scale-105"
-        >
-          <IoSearchOutline className="h-6 w-6 group-hover:scale-110 transition-transform duration-200" />
-        </button>
+  type="submit"
+  
+  className="group flex items-center justify-center w-full sm:w-auto bg-logoColor hover:bg-logoColor/90 text-white p-3 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+>
+  <IoSearchOutline className="h-6 w-6 group-hover:scale-110 transition-transform duration-200" />
+</button>
       </form>
 
       {isHideSearch && filteredData.length > 0 && (
@@ -234,9 +226,10 @@ const SearchBox = () => {
                   : null;
                 return (
                   <div
-                    onClick={() => {
-                      alert("Work in Progress");
-                      setIsHideSearch(false);
+                    onClick={() => { 
+                      navigate(
+                        "/projects/" + title.replaceAll(" ", "-") + "/" + _id
+                      );
                     }}
                     key={index}
                     className={`flex items-center gap-3 p-3 cursor-pointer transition-all duration-200 hover:bg-green-50 ${
@@ -253,12 +246,11 @@ const SearchBox = () => {
                     <div className="flex-1">
                       <p className="text-sm md:text-base font-semibold text-gray-800">
                         {title}
-                        <span className="text-gray-500"> ({propertyType})</span> {" "}
-                        <span
-                          className={` ${getStatusClass(
-                            status
-                          )}`}
-                        >
+                        <span className="text-gray-500">
+                          {" "}
+                          ({propertyType})
+                        </span>{" "}
+                        <span className={` ${getStatusClass(status)}`}>
                           ({status})
                         </span>
                       </p>

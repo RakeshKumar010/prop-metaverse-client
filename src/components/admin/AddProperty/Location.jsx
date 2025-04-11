@@ -9,10 +9,33 @@ const Location = ({ setIsActive }) => {
   // Handle input changes
   const handleChange = (e) => {
     const { id, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [id]: value,
-    }));
+
+
+    if (id === "googleMap") {
+      // Extract src value if iframe string is provided
+      const regex = /src=['"]([^'"]+)['"]/; // This regex matches both single and double quotes
+      const match = value.match(regex);
+
+      if (match) {
+        setFormData((prevData) => ({
+          ...prevData,
+          [id]: match[1], // Save the extracted src value
+        }));
+      } else {
+        setFormData((prevData) => ({
+          ...prevData,
+          [id]: value, // Save the raw input if no match
+        }));
+      }
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [id]: value,
+      }));
+    }
+
+
+  
   };
 
   return (
@@ -79,6 +102,21 @@ const Location = ({ setIsActive }) => {
           {formData.error && (
             <p className="text-red-500 text-xs mt-1">{formData.error}</p>
           )}
+        </div>
+
+        {/* New Google Map input field */}
+        <div className="flex flex-col gap-2">
+          <label htmlFor="googleMap" className="text-[14px] font-semibold leading-[26px]">
+            Google Map 
+          </label>
+          <input
+            type="text"
+            id="googleMap"
+            value={formData.googleMap}
+            onChange={handleChange}
+            className="border-[1px] px-2 rounded-lg h-14 border-gray-300 text-sm py-3"
+            placeholder="Paste Google Map Embed URL"
+          />
         </div>
       </div>
       <div className="flex justify-start">

@@ -38,6 +38,7 @@ const initialFormData = {
   propertyType: "",
   status: "",
   developer: "",
+  aboutDeveloper: "",
   constructionYear: "",
   price: "",
   discount: "",
@@ -45,6 +46,7 @@ const initialFormData = {
   address: "",
   state: "",
   city: "",
+  googleMap: "",
   floorPlan: [{ type: "", carpetArea: "", price: "" }],
   faqs: [{ question: "", answer: "" }],
   keywords: [{ heading: "", keyword: [] }],
@@ -82,12 +84,14 @@ const Amenities = ({ action }) => {
       appendIfValid("propertyType", formData.propertyType);
       appendIfValid("status", formData.status);
       appendIfValid("developer", formData.developer);
+      appendIfValid("aboutDeveloper", formData.aboutDeveloper);
       appendIfValid("constructionYear", formData.constructionYear);
       appendIfValid("price", formData.price);
       appendIfValid("discount", formData.discount);
       appendIfValid("address", formData.address);
       appendIfValid("state", formData.state);
       appendIfValid("city", formData.city);
+      appendIfValid("googleMap", formData.googleMap);
 
       // Handle galleryImg as file objects with better logging
       console.log("galleryImg before submission:", formData.galleryImg);

@@ -41,7 +41,7 @@ const HeroSection = () => {
 
   return (
     <div
-      className="relative w-full pt-6 sm:pt-10 md:pt-20 lg:pt-40 pb-5 md:pb-0 min-h-[100vh] md:min-h-screen bg-cover bg-center px-4 sm:px-6 md:px-10 lg:px-40"
+      className="relative w-full pt-6 sm:pt-10 md:pt-20 lg:pt-40 pb-5 md:pb-0 min-h-[100vh] md:min-h-screen bg-cover bg-center px-3 md:px-10 lg:px-20 xl:px-28 2xl:px-40"
       style={{ backgroundImage: `url(${Herobg})` }}
     >
       <div className="bg-gradient-to-t absolute inset-0 to-[#061a33] from-[#173306]/80"></div>

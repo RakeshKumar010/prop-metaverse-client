@@ -3,7 +3,7 @@ import { GoArrowUpRight } from "react-icons/go";
 import { MyContext } from "../../../App";
 
 const BasicInformation = ({ setIsActive }) => {
-  const { formData, setFormData } = useContext(MyContext); 
+  const { formData, setFormData } = useContext(MyContext);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -37,7 +37,7 @@ const BasicInformation = ({ setIsActive }) => {
     // Default case: update the state
     setFormData((prevData) => ({
       ...prevData,
-      [id]: value
+      [id]: value,
     }));
   };
 
@@ -46,15 +46,12 @@ const BasicInformation = ({ setIsActive }) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  
-
   return (
     <div className="space-y-5">
       <p className="text-[17px] leading-[25.5px] font-semibold">
         Basic Information
       </p>
       <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50 transition-all hover:border-gray-400">
-         
         <div className="flex flex-col gap-2">
           <label
             htmlFor="title"
@@ -166,7 +163,7 @@ const BasicInformation = ({ setIsActive }) => {
             htmlFor="developer"
             className="text-[14px] font-semibold leading-[26px]"
           >
-           Developer
+            Developer
           </label>
           <input
             type="text" // Changed to number input
@@ -175,6 +172,21 @@ const BasicInformation = ({ setIsActive }) => {
             onChange={handleChange}
             placeholder="Developer or builder name"
             className="border-[1px] px-2 rounded-lg h-14 border-gray-300 text-sm py-3"
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label
+            htmlFor="aboutDeveloper"
+            className="text-[14px] font-semibold leading-[26px]"
+          >
+            About Developer
+          </label>
+          <textarea
+            id="aboutDeveloper"
+            value={formData.aboutDeveloper || ""}
+            onChange={handleChange}
+            placeholder="Write about developer.."
+            className="border-[1px] px-2 rounded-lg h-28 border-gray-300 text-sm py-3 resize-none"
           />
         </div>
         <div className="flex flex-col gap-2">

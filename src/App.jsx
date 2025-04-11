@@ -17,6 +17,7 @@ const App = () => {
     propertyType: "",
     status: "",
     developer: "",
+    aboutDeveloper: "",
     constructionYear: "",
     price: "",
     discount: "",
@@ -28,6 +29,7 @@ const App = () => {
     address: "",
     state: "",
     city: "",
+    googleMap:"",
 
     //Details
     floorPlan: [{ type: "", carpetArea: "", price: "" }],

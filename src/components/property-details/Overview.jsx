@@ -3,7 +3,7 @@ import React from "react";
 import { GiPriceTag } from "react-icons/gi";
 import { MdDeveloperBoard } from "react-icons/md";
 
-const Overview = () => {
+const Overview = ({propertyType,developer,price}) => {
   return (
     <>
       <div className="w-full mt-10 px-4 md:px-8">
@@ -14,7 +14,7 @@ const Overview = () => {
             <Building className="bg-logoBlue/10 group-hover:bg-logoBlue group-hover:text-white text-logoBlue rounded p-2 size-10 transition-all duration-300" />
             <div className="">
               <p className=" text-sm">Type:</p>
-              <p className="text-gray-800 font-semibold text-sm md:text-base">Apartment</p>
+              <p className="text-gray-800 font-semibold text-sm md:text-base">{propertyType}</p>
             </div>
           </div>
 
@@ -22,7 +22,7 @@ const Overview = () => {
             <MdDeveloperBoard className="bg-logoBlue/10 group-hover:bg-logoBlue group-hover:text-white text-logoBlue rounded p-2 size-10 transition-all duration-300" />
             <div className="">
               <p className=" text-sm">Developer:</p>
-              <p className="text-gray-800 font-semibold text-sm md:text-base">ABC Developers</p>
+              <p className="text-gray-800 font-semibold text-sm md:text-base">{developer}</p>
             </div>
           </div>
 
@@ -30,7 +30,7 @@ const Overview = () => {
             <GiPriceTag className="bg-logoBlue/10 group-hover:bg-logoBlue group-hover:text-white text-logoBlue rounded p-2 size-10 transition-all duration-300" />
             <div className="">
               <p className=" text-sm">Price:</p>
-              <p className="text-gray-800 font-semibold text-sm md:text-base">15 Lakh</p>
+              <p className="text-gray-800 font-semibold text-sm md:text-base">{price}</p>
             </div>
           </div>
         </div>

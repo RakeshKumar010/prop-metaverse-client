@@ -55,7 +55,7 @@ const ContactUs = () => {
   };
 
   return (
-    <div className="py-16 px-6 md:px-16 bg-white text-center">
+    <div className="py-16 px-3 md:px-10 lg:px-20 xl:px-28 2xl:px-40 bg-white text-center">
       <HeaderText title={"Contact Us"} />
 
       <div className="max-w-4xl mx-auto mt-10 bg-gray-900 text-white p-8 rounded-lg">
@@ -111,27 +111,27 @@ const ContactUs = () => {
             <option value="female">Female</option>
             <option value="other">Other</option>
           </select>
- {/* City */}
- <input
-              type="text"
-              name="city"
-              placeholder="City"
-              value={formData.city}
-              onChange={handleChange}
-              className="p-3 rounded-lg bg-gray-800 text-white outline-none focus:ring-2 focus:ring-green-500"
-              required
-            />
-            {/* Pincode */}
-            <input
-              type="text"
-              name="pincode"
-              placeholder="Pincode"
-              value={formData.pincode}
-              onChange={handleChange}
-              className="p-3 rounded-lg bg-gray-800 text-white outline-none focus:ring-2 focus:ring-green-500"
-              required
-            />
-            {/* Date of Birth */}
+          {/* City */}
+          <input
+            type="text"
+            name="city"
+            placeholder="City"
+            value={formData.city}
+            onChange={handleChange}
+            className="p-3 rounded-lg bg-gray-800 text-white outline-none focus:ring-2 focus:ring-green-500"
+            required
+          />
+          {/* Pincode */}
+          <input
+            type="text"
+            name="pincode"
+            placeholder="Pincode"
+            value={formData.pincode}
+            onChange={handleChange}
+            className="p-3 rounded-lg bg-gray-800 text-white outline-none focus:ring-2 focus:ring-green-500"
+            required
+          />
+          {/* Date of Birth */}
           <div
             className="relative p-3 col-span-1 md:col-span-2 flex gap-5 items-center rounded-lg bg-gray-800 text-white"
             onClick={() => document.getElementById("dob-input").showPicker()}
@@ -149,7 +149,6 @@ const ContactUs = () => {
               required
             />
           </div>
- 
 
           <textarea
             name="workExperience"
@@ -162,7 +161,10 @@ const ContactUs = () => {
           ></textarea>
 
           {/* Submit Button */}
-          <button type="submit" className="relative col-span-1 md:col-span-2 bg-logoColor hover:bg-logoColor/90 cursor-pointer transition-all py-3 rounded-lg">
+          <button
+            type="submit"
+            className="relative col-span-1 md:col-span-2 bg-logoColor hover:bg-logoColor/90 cursor-pointer transition-all py-3 rounded-lg"
+          >
             <div
               className={`text-logoColor absolute text-nowrap right-[50%] translate-x-[50%] transition-all duration-500  -top-8  text-lg font-bold ${
                 isSubmitted ? "black" : "hidden"
@@ -170,9 +172,7 @@ const ContactUs = () => {
             >
               Enquiry Submitted Successfully!
             </div>
-            <span className="  font-semibold text-white">
-              Submit
-            </span>
+            <span className="  font-semibold text-white">Submit</span>
           </button>
         </form>
       </div>

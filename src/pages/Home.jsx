@@ -14,7 +14,7 @@ const Home = () => {
       <HeroSection  />
       <TrendingProjects/>
       <RealEstateDeals />
-      <PopularProperties />
+      {/* <PopularProperties /> */}
       <ContactUs />
       <AgentsSection />
       <Footer />

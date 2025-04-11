@@ -93,7 +93,7 @@ const Details = ({ setIsActive }) => {
                 Carpet area (ft²)
               </label>
               <input
-                type="text"
+                type="number"
                 placeholder="area"
                 id={`carpetArea-${index}`}
                 value={plan.carpetArea || ""}
@@ -122,7 +122,7 @@ const Details = ({ setIsActive }) => {
                 )}
               </div>
               <input
-                type="text"
+                type="number"
                 placeholder="price"
                 id={`price-${index}`}
                 value={plan.price || ""}

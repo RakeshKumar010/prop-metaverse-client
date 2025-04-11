@@ -11,6 +11,8 @@ import Enquiry from "../components/property-details/Enquiry";
 import Description from "../components/property-details/Description";
 import Amenities from "../components/property-details/Amenities";
 import Faq from "../components/property-details/Faq";
+import AboutDeveloper from "../components/property-details/AboutDeveloper";
+import GoogleMap from "../components/property-details/GoogleMap";
 const baseUrl = import.meta.env.VITE_APP_URL;
 
 const PropertyDetailsPage = () => {
@@ -42,16 +44,59 @@ const PropertyDetailsPage = () => {
           propertyDetails.galleryImg ? propertyDetails.galleryImg : []
         }
       />
-      <div className="px-6 md:px-10 lg:px-40 py-4 rounded -mt-32 grid lg:grid-cols-3 grid-cols-2 gap-6 w-full">
-        <div className="  col-span-2 rounded ">
-          <PropertyHeader />
-          <Overview />
-          <Description description={propertyDetails.description?propertyDetails.description:''}/>
-          <Amenities amenities={propertyDetails.amenities} />
-          <Faq faqs={propertyDetails.faqs?propertyDetails.faqs:[]}/>
-        </div>
-        <div className="col-span-2 lg:col-span-1">
-          <Enquiry />
+      <div className="px-2 md:px-10 lg:px-20 xl:px-28 2xl:px-40 py-4 rounded grid  -mt-52   ">
+        {propertyDetails &&
+        (propertyDetails.title ||
+          propertyDetails.price ||
+          propertyDetails.status ||
+          propertyDetails.address ||
+          propertyDetails.constructionYear) ? (
+          <PropertyHeader
+          price={propertyDetails.price}
+          title={propertyDetails.title}
+          status={propertyDetails.status}
+            address={propertyDetails.address}
+            constructionYear={propertyDetails.constructionYear}
+          />
+        ) : null}
+        <div className="grid lg:grid-cols-3 grid-cols-2 gap-6 w-full ">
+          <div className="  col-span-2 rounded ">
+            {propertyDetails &&
+            (propertyDetails.propertyType ||
+              propertyDetails.developer ||
+              propertyDetails.price) ? (
+              <Overview
+                propertyType={propertyDetails.propertyType}
+                developer={propertyDetails.developer}
+                price={propertyDetails.price}
+              />
+            ) : null}
+            {propertyDetails && propertyDetails.description ? (
+              <Description description={propertyDetails.description} />
+            ) : null}
+            {propertyDetails && propertyDetails.amenities ? (
+              <Amenities amenities={propertyDetails.amenities} />
+            ) : null}
+            {propertyDetails && propertyDetails.faqs ? (
+              <Faq faqs={propertyDetails.faqs} />
+            ) : null}
+            {propertyDetails && propertyDetails.aboutDeveloper ? (
+              <AboutDeveloper
+                developer={propertyDetails.developer}
+                aboutDeveloper={propertyDetails.aboutDeveloper}
+              />
+            ) : null}
+
+            {propertyDetails && propertyDetails.googleMap ? (
+              <GoogleMap
+                address={propertyDetails.address}
+                googleMap={propertyDetails.googleMap}
+              />
+            ) : null}
+          </div>
+          <div className="col-span-2 lg:col-span-1">
+            <Enquiry />
+          </div>
         </div>
       </div>
       <AgentsSection />

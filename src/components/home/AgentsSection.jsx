@@ -9,8 +9,8 @@ const agents = [
 
 const AgentsSection = () => {
   return (
-    <div className="w-full py-12 px-6 md:px-16 bg-white flex justify-center">
-      <div className="max-w-6xl w-full flex border-b border-gray-400 flex-col md:flex-row items-center">
+    <div className="w-full py-12 px-3 md:px-10 lg:px-20 xl:px-28 2xl:px-40 bg-white flex justify-center">
+      <div className=" w-full flex border-b border-gray-400 flex-col md:flex-row items-center">
         {/* Left Text Section */}
         <div className="w-full md:w-1/3">
           <h2 className="text-2xl md:text-3xl font-bold">

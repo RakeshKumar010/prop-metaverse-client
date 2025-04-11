@@ -32,7 +32,7 @@ const PopularProperties = () => {
   ];
 
   return (
-    <div className="md:py-16 px-6 md:px-40  bg-white text-center">
+    <div className="md:py-16 px-3 md:px-10 lg:px-20 xl:px-28 2xl:px-40  bg-white text-center">
       {/* Section Title */}
      
 
@@ -40,7 +40,7 @@ const PopularProperties = () => {
     
       <WorkInProcess />
       {/* Property Grid */}
-      <div className="hidden grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10 max-w-5xl mx-auto">
+      <div className="hidden grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10 w-full mx-auto">
         {properties.map((property, index) => (
           <div
             key={property.id}

@@ -95,12 +95,8 @@ const TrendingProjects = () => {
 
       {/* Projects Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filtered.map((proj, i) => (
-          <div
-            key={proj._id}
-            className="animate-slideUp"
-            style={{ animationDelay: `${i * 100}ms` }}
-          >
+        {filtered.map((proj) => (
+          <div key={proj._id}>
             <TrendingProjectCard
               id={proj._id}
               propertyType={proj.propertyType}

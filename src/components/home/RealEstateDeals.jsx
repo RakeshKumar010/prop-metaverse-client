@@ -27,7 +27,7 @@ const RealEstateDeals = () => {
   ];
 
   return (
-    <div className="py-16 px-6 md:px-40 bg-white text-center">
+    <div className="px-3 md:px-10 lg:px-20 xl:px-28 2xl:px-40 bg-white text-center">
       {/* Title */}
       <h2 className="text-2xl md:text-3xl font-bold text-logoColor">
         We are Offering the Best Real Estate Deals
