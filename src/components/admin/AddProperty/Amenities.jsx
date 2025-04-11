@@ -37,6 +37,7 @@ const initialFormData = {
   description: "",
   propertyType: "",
   status: "",
+  developer: "",
   constructionYear: "",
   price: "",
   discount: "",
@@ -80,6 +81,7 @@ const Amenities = ({ action }) => {
       appendIfValid("description", formData.description);
       appendIfValid("propertyType", formData.propertyType);
       appendIfValid("status", formData.status);
+      appendIfValid("developer", formData.developer);
       appendIfValid("constructionYear", formData.constructionYear);
       appendIfValid("price", formData.price);
       appendIfValid("discount", formData.discount);

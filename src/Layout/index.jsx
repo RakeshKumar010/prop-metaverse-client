@@ -15,9 +15,12 @@ import AddProperty from "../components/admin/pages/AddProperty";
 import Property from "../components/admin/pages/Property";
 import Hero from "../components/admin/pages/Hero";
 import AddHero from "../components/admin/pages/AddHero";
+import Projects from "../pages/Projects";
+import PropertyDetailsPage from "../pages/PropertyDetailsPage";
 
 const Layout = () => {
   const [isAdmin, setIsAdmin] = useState(false);
+  
   useEffect(() => {
     const user = localStorage.getItem("user");
     if (user) {
@@ -28,6 +31,10 @@ const Layout = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/projects/:title/:id" element={<PropertyDetailsPage />} />
+
+        {/* admin  */}
         <Route
           path="/admin-login"
           element={<AdminLogin setIsAdmin={setIsAdmin} />}

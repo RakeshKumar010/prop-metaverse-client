@@ -9,12 +9,14 @@ const App = () => {
   const [isPopUpOpen, setIsPopUpOpen] = useState(false);
   const [damacIsPopUpOpen, setDamacIsPopUpOpen] = useState(false);
   const [propertyData, setPropertyData] = useState();
+  const [siteName, setSiteName] = useState("Prop Metaverse");
   const [formData, setFormData] = useState({
     // Basic Property Information
     title: "",
     description: "",
     propertyType: "",
     status: "",
+    developer: "",
     constructionYear: "",
     price: "",
     discount: "",
@@ -58,6 +60,8 @@ const App = () => {
         setDamacIsPopUpOpen,
         propertyData,
         setPropertyData,
+        siteName,
+        setSiteName
       }}
     >
       <Layout />

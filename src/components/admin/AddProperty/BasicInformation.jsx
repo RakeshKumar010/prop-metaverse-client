@@ -163,6 +163,22 @@ const BasicInformation = ({ setIsActive }) => {
 
         <div className="flex flex-col gap-2">
           <label
+            htmlFor="developer"
+            className="text-[14px] font-semibold leading-[26px]"
+          >
+           Developer
+          </label>
+          <input
+            type="text" // Changed to number input
+            id="developer"
+            value={formData.developer || ""}
+            onChange={handleChange}
+            placeholder="Developer or builder name"
+            className="border-[1px] px-2 rounded-lg h-14 border-gray-300 text-sm py-3"
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label
             htmlFor="constructionYear"
             className="text-[14px] font-semibold leading-[26px]"
           >

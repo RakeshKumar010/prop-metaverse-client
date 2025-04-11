@@ -27,8 +27,15 @@ const SearchBox = () => {
         setIsHideSearch(true);
         const results = propertyData.filter((item) => {
           const matchesSearch = search
-            ? ["title", "description", "address", "city", "state", "country"].some(
-                (key) => item[key]?.toLowerCase().includes(search.toLowerCase())
+            ? [
+                "title",
+                "description",
+                "address",
+                "city",
+                "state",
+                "constructionYear",
+              ].some((key) =>
+                item[key]?.toLowerCase().includes(search.toLowerCase())
               )
             : true;
           const matchesType = propertyType
@@ -36,7 +43,8 @@ const SearchBox = () => {
             : true;
           const matchesStatus = status ? item.status === status : true;
           const matchesBhk = bhkType
-            ? bhkType === "Any" || item.floorPlan.some(plan => plan.type === bhkType)
+            ? bhkType === "Any" ||
+              item.floorPlan.some((plan) => plan.type === bhkType)
             : true;
 
           return matchesSearch && matchesType && matchesStatus && matchesBhk;
@@ -57,8 +65,10 @@ const SearchBox = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
-        (dropdownRef.current && !dropdownRef.current.contains(event.target)) &&
-        (filterRef.current && !filterRef.current.contains(event.target))
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        filterRef.current &&
+        !filterRef.current.contains(event.target)
       ) {
         setIsHideSearch(false);
         setShowFilters(false);
@@ -74,7 +84,8 @@ const SearchBox = () => {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (selectedIndex >= 0 && filteredData[selectedIndex]) {
-      const { title, developer, fullAddress, _id } = filteredData[selectedIndex];
+      const { title, developer, fullAddress, _id } =
+        filteredData[selectedIndex];
       navigate(
         ("/" + title.replace(/\s+/g, "-")).toLowerCase() +
           "-by-" +
@@ -105,6 +116,21 @@ const SearchBox = () => {
     }
   };
 
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "Available":
+        return "bg-green-100 text-green-600";
+      case "Sold":
+        return "bg-red-100 text-red-600";
+      case "Rented":
+        return "bg-yellow-100 text-yellow-600";
+      case "Under Construction":
+        return "bg-blue-100 text-blue-600";
+      default:
+        return "bg-gray-100 text-gray-500";
+    }
+  };
+
   return (
     <div className="relative w-full max-w-6xl mx-auto">
       <form
@@ -119,7 +145,7 @@ const SearchBox = () => {
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={handleKeyDown}
               type="text"
-              placeholder="Enter an address, neighborhood, city, or ZIP code"
+              placeholder="Enter an property name,address, price, state, or city"
               className="w-full bg-transparent outline-none text-gray-700 placeholder-gray-400 text-sm md:text-base"
             />
           </div>
@@ -138,7 +164,9 @@ const SearchBox = () => {
           ref={filterRef}
           className={`${
             showFilters ? "flex" : "hidden"
-          } sm:flex flex-col sm:flex-row gap-4 w-full ${showFilters ? "animate-in fade-in duration-200" : ""}`}
+          } sm:flex flex-col sm:flex-row gap-4 w-full ${
+            showFilters ? "animate-in fade-in duration-200" : ""
+          }`}
         >
           <select
             value={propertyType}
@@ -187,16 +215,23 @@ const SearchBox = () => {
       </form>
 
       {isHideSearch && filteredData.length > 0 && (
-        <div 
+        <div
           ref={dropdownRef}
           className="relative top-10 sm:top-14 md:top-20 animate-in fade-in duration-300"
         >
           <div className="absolute w-full bg-white shadow-lg rounded-xl border border-gray-100 max-h-[300px] overflow-y-auto z-10">
             {filteredData.map(
-              ({ _id, title, propertyType, address, galleryImg, floorPlan }, index) => {
+              (
+                { _id, title, propertyType, address, galleryImg, floorPlan },
+                index
+              ) => {
                 const isString = typeof galleryImg[0] === "string";
-                const fileName = isString ? galleryImg[0].split(/[/\\]/).pop() : null;  
-                const fileUrl = isString ? `${baseUrl}/uploads/property/${fileName}` : null;
+                const fileName = isString
+                  ? galleryImg[0].split(/[/\\]/).pop()
+                  : null;
+                const fileUrl = isString
+                  ? `${baseUrl}/uploads/property/${fileName}`
+                  : null;
                 return (
                   <div
                     onClick={() => {
@@ -217,11 +252,19 @@ const SearchBox = () => {
                     />
                     <div className="flex-1">
                       <p className="text-sm md:text-base font-semibold text-gray-800">
-                        {title} 
-                        <span className="text-gray-500"> ({propertyType})</span>
+                        {title}
+                        <span className="text-gray-500"> ({propertyType})</span> {" "}
+                        <span
+                          className={` ${getStatusClass(
+                            status
+                          )}`}
+                        >
+                          ({status})
+                        </span>
                       </p>
                       <p className="text-xs md:text-sm text-gray-600 line-clamp-1">
-                        {address} - {floorPlan.map(plan => plan.type).join(", ")}
+                        {address} -{" "}
+                        {floorPlan.map((plan) => plan.type).join(", ")}
                       </p>
                     </div>
                   </div>

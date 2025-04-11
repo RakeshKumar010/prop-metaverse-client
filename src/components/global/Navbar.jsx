@@ -15,19 +15,20 @@ import { MyContext } from "../../App";
 import Popup from "./Popup";
 import DamacPopUp from "./DamacPopUp";
 
-const Navbar = () => {
+const Navbar = ({isGlass}) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { isPopUpOpen, setIsPopUpOpen, damacIsPopUpOpen, setDamacIsPopUpOpen } =
     useContext(MyContext);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
     setTimeout(() => {
       setDamacIsPopUpOpen(true);
-    }, 3000);
+    }, 10000);
     setTimeout(() => {
       setIsPopUpOpen(true);
-    }, 10000);
+    }, 15000);
 
     const handleScroll = () => {
       if (window.scrollY > window.innerHeight) {
@@ -49,7 +50,7 @@ const Navbar = () => {
       <header
         className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ease-in-out 
       ${
-        scrolled ? "bg-[#061a33] shadow-lg" : "bg-transparent backdrop-blur-xl"
+        scrolled || !isGlass ? "bg-[#061a33] shadow-lg" : "bg-transparent backdrop-blur-xl"
       } text-white `}
       >
         {/* Top Bar */}
@@ -104,7 +105,7 @@ const Navbar = () => {
             className={`${
               menuOpen ? "flex" : "hidden"
             } md:flex flex-col md:flex-row md:items-center absolute   md:static top-[60px] left-0 w-full md:w-auto 
-        bg-[#061a33] md:bg-transparent md:space-x-10 space-y-6 md:space-y-0 p-6 md:p-0`}
+        bg-[#061a33] md:bg-transparent md:space-x-5 lg:space-x-10 space-y-6 md:space-y-0 p-6 md:p-0`}
           >
             <li>
               <Link to="/" className="hover:text-logoColor flex items-center">
@@ -122,8 +123,8 @@ const Navbar = () => {
               </Link>
             </li>
             <li>
-              <Link to="/" className="hover:text-logoColor">
-                Investments
+              <Link to="/projects" className="hover:text-logoColor">
+                Projects
               </Link>
             </li>
             <li>
@@ -144,8 +145,8 @@ const Navbar = () => {
           </ul>
         </nav>
       </header>
-      {isPopUpOpen ? <Popup /> : null}
-      {damacIsPopUpOpen ? <DamacPopUp /> : null}
+      {/* {isPopUpOpen ? <Popup /> : null}
+      {damacIsPopUpOpen ? <DamacPopUp /> : null} */}
     </>
   );
 };

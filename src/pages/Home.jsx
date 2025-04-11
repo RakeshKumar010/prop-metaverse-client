@@ -6,11 +6,13 @@ import Footer from "../components/global/Footer";
 import RealEstateDeals from "../components/home/RealEstateDeals";
 import PopularProperties from "../components/home/PopularProperties";
 import ContactUs from "../components/home/ContactUs"; 
-const Home = () => {
+import TrendingProjects from "../components/home/TrendingProjects"; 
+const Home = () => { 
   return (
     <>
-      <Navbar />
+      <Navbar isGlass={true}/>
       <HeroSection  />
+      <TrendingProjects/>
       <RealEstateDeals />
       <PopularProperties />
       <ContactUs />
